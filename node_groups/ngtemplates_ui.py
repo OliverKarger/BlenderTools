@@ -24,6 +24,7 @@ class NODE_PT_ngtemplates_panel(bpy.types.Panel):
             col.label(text="Select a Node Group", icon='INFO')
 
         layout.operator("blendertools.add_node_group_template_modal")
+        layout.operator("blendertools.import_ngtemplate")
 
 def register():
     print("Registering Node Group Templates UI")

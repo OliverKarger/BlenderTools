@@ -1,14 +1,24 @@
 import bpy
 
 def serialize_node_group(group):
-    # Correctly extract inputs and outputs from interface
-    inputs = [item for item in group.interface.items_tree if item.item_type == 'SOCKET' and item.in_out == 'INPUT']
-    outputs = [item for item in group.interface.items_tree if item.item_type == 'SOCKET' and item.in_out == 'OUTPUT']
+    # Tag the node group as a template
+    group["is_template"] = True
+
+    inputs = [
+        item.name for item in group.interface.items_tree
+        if item.item_type == 'SOCKET' and item.in_out == 'INPUT'
+    ]
+    outputs = [
+        item.name for item in group.interface.items_tree
+        if item.item_type == 'SOCKET' and item.in_out == 'OUTPUT'
+    ]
+
+    node_names = {node.name for node in group.nodes}
 
     data = {
         'name': group.name,
-        'inputs': [item.name for item in inputs],
-        'outputs': [item.name for item in outputs],
+        'inputs': inputs,
+        'outputs': outputs,
         'nodes': [],
         'links': []
     }
@@ -23,12 +33,13 @@ def serialize_node_group(group):
         })
 
     for link in group.links:
-        data['links'].append({
-            'from_node': link.from_node.name,
-            'from_socket': link.from_socket.name,
-            'to_node': link.to_node.name,
-            'to_socket': link.to_socket.name
-        })
+        if link.from_node.name in node_names and link.to_node.name in node_names:
+            data['links'].append({
+                'from_node': link.from_node.name,
+                'from_socket': link.from_socket.name,
+                'to_node': link.to_node.name,
+                'to_socket': link.to_socket.name
+            })
 
     return data
 
@@ -36,5 +47,5 @@ def get_template_node_groups(self, context):
     return [
         (group.name, group.name, "")
         for group in bpy.data.node_groups
-        if group.bl_idname == 'ShaderNodeTree' and group.name.startswith("TEMPLATE_")
+        if group.bl_idname == 'ShaderNodeTree' and group.get("is_template", False)
     ] or [("NONE", "No templates found", "")]
