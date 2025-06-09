@@ -22,45 +22,9 @@ class NODE_OT_import_node_group_template(bpy.types.Operator):
             return {'CANCELLED'}
 
         try:
-            with open(self.filepath, 'r') as f:
-                data = json.load(f)
-        except Exception as e:
-            self.report({'ERROR'}, f"Failed to load JSON: {e}")
-            return {'CANCELLED'}
+            ngtemplates_utils.import_template_from_file(self.filepath)
 
-        try:
-            group_name = bpy.path.clean_name(data.get('name', 'ImportedTemplate'))
-            group = bpy.data.node_groups.new(name=group_name, type='ShaderNodeTree')
-            group["is_template"] = True
-
-            # Create sockets (default type: Float for inputs, Shader for outputs)
-            for name in data['inputs']:
-                group.interface.new_socket(name=name, in_out='INPUT', socket_type='NodeSocketFloat')
-            for name in data['outputs']:
-                group.interface.new_socket(name=name, in_out='OUTPUT', socket_type='NodeSocketShader')
-
-            # Create nodes
-            name_to_node = {}
-            for node_data in data['nodes']:
-                node = group.nodes.new(type=node_data['type'])
-                node.name = node_data['name']
-                node.location = node_data['location']
-                name_to_node[node.name] = node
-
-            # Rebuild internal links only
-            for link in data['links']:
-                from_node = name_to_node.get(link['from_node'])
-                to_node = name_to_node.get(link['to_node'])
-
-                if from_node and to_node:
-                    try:
-                        from_socket = from_node.outputs[link['from_socket']]
-                        to_socket = to_node.inputs[link['to_socket']]
-                        group.links.new(from_socket, to_socket)
-                    except Exception as e:
-                        print(f"Failed to link {from_node.name} → {to_node.name}: {e}")
-
-            self.report({'INFO'}, f"Node group '{group.name}' imported successfully")
+            self.report({'INFO'}, f"Node group imported successfully")
             return {'FINISHED'}
 
         except Exception as e:

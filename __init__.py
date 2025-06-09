@@ -7,16 +7,22 @@ bl_info = {
     "doc_url": "https://gitlab.karger.lan/oliver/blendertools",
 }
 
+import bpy
+import os
+
 from . import armature
 from . import node_groups
+from . import preferences
 
 def register():
+    preferences.register()
     armature.register()
     node_groups.register()
 
 def unregister():
     armature.unregister()
     node_groups.unregister()
+    preferences.unregister()
 
 if __name__ == "__main__":
     register()
