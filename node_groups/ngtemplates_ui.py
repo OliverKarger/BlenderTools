@@ -5,7 +5,7 @@ from . import ngtemplates_menus
 class NODE_PT_ngtemplates_panel(bpy.types.Panel):
     bl_space_type = 'NODE_EDITOR'
     bl_region_type = 'UI'
-    bl_category = 'Node Templates'
+    bl_category = 'Blender Tools'
     bl_label = "Node Templates"
 
     @classmethod
