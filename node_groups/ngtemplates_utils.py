@@ -92,7 +92,7 @@ def auto_import_templates():
         return None
 
     prefs = addon.preferences
-    if not prefs.auto_import_enabled:
+    if not prefs.AutoImportEnabled:
         return None
 
     # Resolve default path relative to addon dir
@@ -100,7 +100,7 @@ def auto_import_templates():
     default_path = os.path.join(addon_dir, "templates")
 
     search_paths = [default_path]
-    search_paths += [bpy.path.abspath(p.path) for p in prefs.additional_paths if p.path.strip()]
+    search_paths += [bpy.path.abspath(p.path) for p in prefs.AdditionalImportPaths if p.path.strip()]
 
     for template_dir in search_paths:
         if not os.path.isdir(template_dir):

@@ -1,16 +1,20 @@
 import bpy
 
 class OT_AddTemplatePath(bpy.types.Operator):
+    """ Adds a Template Path from Preferences"""
+
     bl_idname = "blendertools.add_template_path"
     bl_label = "Add Template Path"
 
     def execute(self, context):
         prefs = context.preferences.addons["blendertools"].preferences
-        prefs.additional_paths.add()
+        prefs.AdditionalImportPaths.add()
         return {'FINISHED'}
 
 
 class OT_RemoveTemplatePath(bpy.types.Operator):
+    """ Removes a Template Path from Preferences"""
+
     bl_idname = "blendertools.remove_template_path"
     bl_label = "Remove Template Path"
 
@@ -18,8 +22,8 @@ class OT_RemoveTemplatePath(bpy.types.Operator):
 
     def execute(self, context):
         prefs = context.preferences.addons["blendertools"].preferences
-        if 0 <= self.index < len(prefs.additional_paths):
-            prefs.additional_paths.remove(self.index)
+        if 0 <= self.index < len(prefs.AdditionalImportPaths):
+            prefs.AdditionalImportPaths.remove(self.index)
         return {'FINISHED'}
     
 def register():

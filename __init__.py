@@ -7,9 +7,6 @@ bl_info = {
     "doc_url": "https://gitlab.karger.lan/oliver/blendertools",
 }
 
-import bpy
-import os
-
 from . import armature
 from . import node_groups
 from . import preferences

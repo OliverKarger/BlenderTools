@@ -8,6 +8,7 @@ def register():
     ngtemplates_ops.register()
     ngtemplates_ui.register()
 
+    # Needs to run later so the Python Environment is fully initialized/available
     bpy.app.timers.register(ngtemplates_utils.auto_import_templates, first_interval=1)
 
 def unregister():
