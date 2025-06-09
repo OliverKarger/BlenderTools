@@ -8,12 +8,15 @@ bl_info = {
 }
 
 from . import armature
+from . import node_groups
 
 def register():
     armature.register()
+    node_groups.register()
 
 def unregister():
     armature.unregister()
+    node_groups.unregister()
 
 if __name__ == "__main__":
     register()
