@@ -6,12 +6,12 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
     """Performs various checks between Source and Target Armature"""
 
     bl_idname = "blendertools.armature_sync_check"
-    bl_label = "Check Armature Compatibility"
+    bl_label = "Check Compatibility"
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
-        source = props.SourceArmature
-        target = props.TargetArmature
+        source = props.source_armature
+        target = props.target_armature
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
@@ -68,12 +68,12 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
     """
 
     bl_idname = "blendertools.armature_sync_enum"
-    bl_label = "Enumerate Compatible Bones"
+    bl_label = "Enumerate Bones"
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
-        source = props.SourceArmature
-        target = props.TargetArmature
+        source = props.source_armature
+        target = props.target_armature
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
@@ -83,7 +83,7 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
             self.report({"ERROR"}, "Both objects must be of type 'ARMATURE'")
             return {"CANCELLED"}
 
-        props.Bones.clear()
+        props.bones.clear()
 
         source_bones = {bone.name for bone in source.data.bones}
         target_bones = {bone.name for bone in target.data.bones}
@@ -95,13 +95,13 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
             return {"CANCELLED"}
 
         for bone_name in sorted(matching_bones):
-            item = props.Bones.add()
-            item.Name = bone_name
-            item.LinkedName = bone_name
-            item.SourceArmature = source
-            item.TargetArmature = target
-            item.ShouldBeSynced = True
-            item.SyncEnabled = False
+            item = props.bones.add()
+            item.name = bone_name
+            item.linked_name = bone_name
+            item.source_armature = source
+            item.target_armature = target
+            item.should_be_synced = True
+            item.sync_enabled = False
 
         self.report({"INFO"}, f"Found {len(matching_bones)} matching bones.")
         return {"FINISHED"}
@@ -120,8 +120,8 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
     def invoke(self, context, event):
         props = context.scene.blendertools_armaturesync
-        source = props.SourceArmature
-        target = props.TargetArmature
+        source = props.source_armature
+        target = props.target_armature
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
@@ -134,8 +134,8 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
     def draw(self, context):
         props = context.scene.blendertools_armaturesync
-        source = props.SourceArmature
-        target = props.TargetArmature
+        source = props.source_armature
+        target = props.target_armature
 
         self.layout.label(text=f"Source Scale: {tuple(round(s, 3) for s in source.scale)}")
         self.layout.label(text=f"Target Scale: {tuple(round(s, 3) for s in target.scale)}")
@@ -144,20 +144,20 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
 
-        if not props.Bones:
+        if not props.bones:
             self.report({"ERROR"}, "No bones to sync. Please enumerate bones first.")
             return {"CANCELLED"}
 
         applied_count = 0
 
-        for bone_data in props.Bones:
-            if not bone_data.ShouldBeSynced:
+        for bone_data in props.bones:
+            if not bone_data.should_be_synced:
                 continue
 
-            source = bone_data.SourceArmature
-            target = bone_data.TargetArmature
-            source_bone = bone_data.Name
-            target_bone = bone_data.LinkedName
+            source = bone_data.source_armature
+            target = bone_data.target_armature
+            source_bone = bone_data.name
+            target_bone = bone_data.linked_name
 
             if not source or not target or source.type != 'ARMATURE' or target.type != 'ARMATURE':
                 continue
@@ -179,7 +179,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
             con.target = source
             con.subtarget = source_bone
 
-            bone_data.SyncEnabled = True
+            bone_data.sync_enabled = True
             applied_count += 1
 
         self.report({'INFO'}, f"ync constraints applied to {applied_count} bones (target follows source).")
@@ -193,8 +193,8 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
-        source = props.SourceArmature
-        target = props.TargetArmature
+        source = props.source_armature
+        target = props.target_armature
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
@@ -210,8 +210,8 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
         removed_count = 0
 
-        for bone_data in props.Bones:
-            target_bone_name = bone_data.LinkedName
+        for bone_data in props.bones:
+            target_bone_name = bone_data.linked_name
 
             if not target_bone_name or target_bone_name not in target.pose.bones:
                 continue
@@ -223,7 +223,7 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
                 pbone.constraints.remove(c)
                 removed_count += 1
 
-            bone_data.SyncEnabled = False
+            bone_data.sync_enabled = False
 
         self.report({'INFO'}, f"Removed {removed_count} sync constraints from target rig.")
         return {"FINISHED"}

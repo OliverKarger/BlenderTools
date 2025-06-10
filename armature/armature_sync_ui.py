@@ -1,8 +1,23 @@
 import bpy
 
 class BONE_UL_bone_list(bpy.types.UIList):
-     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        layout.label(text=item.Name)
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname, index
+    ):
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            row = layout.row()
+            
+            if item.sync_enabled:
+                row.alert = True
+
+            row.prop(item, "should_be_synced", text="")
+
+            row.label(text=item.name, icon='BONE_DATA')
+
+        elif self.layout_type == 'GRID':
+            layout.alignment = 'CENTER'
+            layout.label(text="", icon='BONE_DATA')
+
 
 class VIEW3D_PT_armature_sync(bpy.types.Panel):
     bl_label = "Armature Sync"
@@ -11,14 +26,22 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
     bl_region_type = "UI"
     bl_category = "Blender Tools"
 
+    @classmethod
+    def poll(cls, context):
+        addon = context.preferences.addons.get("blendertools")
+        if addon:
+            return addon.preferences.enable_armature
+        else:
+            return False
+
     def draw(self, context):
         layout = self.layout
         props = context.scene.blendertools_armaturesync
 
         layout.label(text="Armature Sync Tools")
 
-        layout.prop(props, "SourceArmature")
-        layout.prop(props, "TargetArmature")
+        layout.prop(props, "source_armature")
+        layout.prop(props, "target_armature")
 
         layout.separator()
 
@@ -26,7 +49,7 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
         row.operator("blendertools.armature_sync_enum", icon='ARMATURE_DATA')
         row.operator("blendertools.armature_sync_check", icon='INFO')
 
-        layout.template_list("BONE_UL_bone_list", "", props, "Bones", props, "ActiveBoneIndex")
+        layout.template_list("BONE_UL_bone_list", "", props, "bones", props, "active_bone_index")
 
         layout.separator()
 

@@ -8,7 +8,11 @@ class NODE_PT_ngtemplates_panel(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        return context.space_data.tree_type == 'ShaderNodeTree'
+        addon = context.preferences.addons.get("blendertools")
+        if addon:
+            return addon.preferences.enable_node_groups and context.space_data.tree_type == 'ShaderNodeTree'
+        else:
+            return False
 
     def draw(self, context):
         layout = self.layout

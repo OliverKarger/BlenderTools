@@ -2,7 +2,7 @@ from . import armature_sync_ops
 from . import armature_sync_ui
 from . import armature_sync_props
 
-def register():
+def register():    
     armature_sync_props.register()
     armature_sync_ops.register()
     armature_sync_ui.register()
