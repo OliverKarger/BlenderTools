@@ -11,14 +11,17 @@ from . import armature
 from . import node_groups
 from . import preferences
 from . import rpc_remote
+from . import simulation
 
 def register():
     preferences.register()
     armature.register()
     node_groups.register()
     rpc_remote.register()
+    simulation.register()
 
 def unregister():
+    simulation.unregister()
     armature.unregister()
     node_groups.unregister()
     preferences.unregister()
