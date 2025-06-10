@@ -1,5 +1,19 @@
 import bpy
 
+def view3d_context_menu(self, context):
+    
+    addon = context.preferences.addons.get("blendertools")
+    if not addon:
+        return False
+    
+    if not bpy.context.active_object.type == "ARMATURE":
+        return
+    
+    layout = self.layout
+
+    layout.operator("blendertools.set_armature_source")
+    layout.operator("blendertools.set_armature_target")
+
 class BONE_UL_bone_list(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname, index
@@ -62,7 +76,11 @@ def register():
     bpy.utils.register_class(BONE_UL_bone_list)
     bpy.utils.register_class(VIEW3D_PT_armature_sync)
 
+    bpy.types.VIEW3D_MT_object_context_menu.append(view3d_context_menu)
+
 def unregister():
     print("Unregistering Armature Sync UI")
     bpy.utils.unregister_class(VIEW3D_PT_armature_sync)
     bpy.utils.unregister_class(BONE_UL_bone_list)
+
+    bpy.types.VIEW3D_MT_object_context_menu.remove(view3d_context_menu)

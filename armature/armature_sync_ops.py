@@ -228,12 +228,36 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
         self.report({'INFO'}, f"Removed {removed_count} sync constraints from target rig.")
         return {"FINISHED"}
 
+class BlenderTools_OT_set_armature_source(bpy.types.Operator):
+    """Sets a Armature as Source Armature"""
+
+    bl_idname = "blendertools.set_armature_source"
+    bl_label = "Set as Source Armature"
+
+    def execute(self, context):
+        props = context.scene.blendertools_armaturesync
+        props.source_armature = context.active_object
+        return { 'FINISHED' }
+    
+class BlenderTools_OT_set_armature_target(bpy.types.Operator):
+    """Sets a Armature as Target Armature"""
+
+    bl_idname = "blendertools.set_armature_target"
+    bl_label = "Set as Target Armature"
+
+    def execute(self, context):
+        props = context.scene.blendertools_armaturesync
+        props.target_armature = context.active_object
+        return { 'FINISHED' }
+
 def register():
     print("Registering Armature Sync Operators")
     bpy.utils.register_class(BlenderTools_ArmatureSyncEnum)
     bpy.utils.register_class(BlenderTools_ArmatureSyncEnable)
     bpy.utils.register_class(BlenderTools_ArmatureSyncDisable)
     bpy.utils.register_class(BlenderTools_ArmatureSyncCheck)
+    bpy.utils.register_class(BlenderTools_OT_set_armature_source)
+    bpy.utils.register_class(BlenderTools_OT_set_armature_target)
 
 def unregister():
     print("Unregistering Armature Sync Operators")
@@ -241,3 +265,5 @@ def unregister():
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncEnable)
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncDisable)
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncCheck)
+    bpy.utils.unregister_class(BlenderTools_OT_set_armature_source)
+    bpy.utils.unregister_class(BlenderTools_OT_set_armature_target)
