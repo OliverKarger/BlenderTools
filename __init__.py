@@ -9,20 +9,20 @@ bl_info = {
 
 from . import armature
 from . import node_groups
-from . import workflow
 from . import preferences
+from . import rpc_remote
 
 def register():
     preferences.register()
     armature.register()
     node_groups.register()
-    workflow.register()
+    rpc_remote.register()
 
 def unregister():
-    workflow.unregister()
     armature.unregister()
     node_groups.unregister()
     preferences.unregister()
+    rpc_remote.unregister()
 
 if __name__ == "__main__":
     register()
