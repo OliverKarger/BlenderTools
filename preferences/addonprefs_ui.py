@@ -21,6 +21,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
 
     enable_armature: bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
     enable_node_groups: bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
+    enable_workflow: bpy.props.BoolProperty(name="Enable Workflows", default=True)
 
     def draw(self, context):
         layout = self.layout
@@ -30,6 +31,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
         enable_box.label(text="Settings", icon="PREFERENCES")
         enable_box.prop(self, "enable_armature")
         enable_box.prop(self, "enable_node_groups")
+        enable_box.prop(self, "enable_workflow")
 
         # --- Additional Template Paths (Shown Only if Enabled) ---
         if self.enable_node_groups:

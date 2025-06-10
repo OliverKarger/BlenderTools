@@ -9,14 +9,17 @@ bl_info = {
 
 from . import armature
 from . import node_groups
+from . import workflow
 from . import preferences
 
 def register():
     preferences.register()
     armature.register()
     node_groups.register()
+    workflow.register()
 
 def unregister():
+    workflow.unregister()
     armature.unregister()
     node_groups.unregister()
     preferences.unregister()
