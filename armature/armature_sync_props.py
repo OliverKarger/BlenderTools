@@ -1,5 +1,7 @@
 import bpy
 
+from ..blender.constraint import CONSTRAINT_MIX_MODE
+
 class BlenderTools_ArmatureSyncBone(bpy.types.PropertyGroup):
     """Contains Information about a Bone"""
 
@@ -19,6 +21,7 @@ class BlenderTools_ArmatureSyncProps(bpy.types.PropertyGroup):
     target_armature: bpy.props.PointerProperty(name="Target Armature", type=bpy.types.Object)
     bones: bpy.props.CollectionProperty(type=BlenderTools_ArmatureSyncBone)
     active_bone_index: bpy.props.IntProperty(name="Active Bone Index")
+    constraint_mix_mode: bpy.props.EnumProperty(name="Mix", items=CONSTRAINT_MIX_MODE)
 
 def register():
     print("Registering Armature Sync Properties")

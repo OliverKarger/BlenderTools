@@ -1,7 +1,6 @@
 import bpy
 
 def view3d_context_menu(self, context):
-    
     addon = context.preferences.addons.get("blendertools")
     if not addon:
         return False
@@ -56,6 +55,7 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
 
         layout.prop(props, "source_armature")
         layout.prop(props, "target_armature")
+        layout.prop(props, "constraint_mix_mode")
 
         layout.separator()
 

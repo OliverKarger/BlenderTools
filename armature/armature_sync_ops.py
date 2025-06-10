@@ -112,11 +112,11 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
     bl_idname = "blendertools.armature_sync_enable"
     bl_label = "Enable Armature Sync"
 
-    CompensateScale: bpy.props.BoolProperty(
-        name="Compensate for Scale Difference",
-        description="Adjust constraint spaces to handle object scale mismatch",
-        default=False,
-    )
+    # CompensateScale: bpy.props.BoolProperty(
+    #     name="Compensate for Scale Difference",
+    #     description="Adjust constraint spaces to handle object scale mismatch",
+    #     default=False,
+    # )
 
     def invoke(self, context, event):
         props = context.scene.blendertools_armaturesync
@@ -174,10 +174,11 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
                 if con.name == "ArmatureSync":
                     pbone.constraints.remove(con)
 
-            con = pbone.constraints.new(type='COPY_TRANSFORMS')
+            con: bpy.types.CopyTransformsConstraint = pbone.constraints.new(type='COPY_TRANSFORMS')
             con.name = "ArmatureSync"
             con.target = source
             con.subtarget = source_bone
+            con.mix_mode = props.constraint_mix_mode
 
             bone_data.sync_enabled = True
             applied_count += 1
