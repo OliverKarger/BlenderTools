@@ -4,13 +4,14 @@ import os
 
 from . import ngtemplates_utils
 
+
 class NODE_OT_import_node_group_template(bpy.types.Operator):
     """Import Node Group Template from JSON"""
     bl_idname = "blendertools.import_ngtemplate"
     bl_label = "Import Node Group Template"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
@@ -31,6 +32,7 @@ class NODE_OT_import_node_group_template(bpy.types.Operator):
             self.report({'ERROR'}, f"Import failed: {e}")
             return {'CANCELLED'}
 
+
 class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
     """Modal for Template Generation"""
 
@@ -39,7 +41,7 @@ class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
     bl_description = "Choose a TEMPLATE_ node group to insert into the current node tree"
     bl_options = {'REGISTER', 'UNDO'}
 
-    group_name: bpy.props.EnumProperty(
+    group_name = bpy.props.EnumProperty(
         name="Template",
         description="Select a node group template",
         items=ngtemplates_utils.get_template_node_groups
@@ -72,13 +74,14 @@ class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
         self.report({'INFO'}, f"Added node group '{self.group_name}'")
         return {'FINISHED'}
 
+
 class NODE_OT_add_ngtemplate_instance(bpy.types.Operator):
     """Creates Instanceof Node Group Template"""
     bl_idname = "blendertools.add_node_group_instance"
     bl_label = "Add Node Group Template"
     bl_options = {'REGISTER', 'UNDO'}
 
-    group_name: bpy.props.StringProperty(name="Node Group Name")
+    group_name = bpy.props.StringProperty(name="Node Group Name")
 
     def execute(self, context):
         space = context.space_data
@@ -94,14 +97,15 @@ class NODE_OT_add_ngtemplate_instance(bpy.types.Operator):
         node.location = context.space_data.cursor_location
 
         return {'FINISHED'}
-    
+
+
 class NODE_OT_export_ngtemplate(bpy.types.Operator):
     """Export Node Group to JSON"""
     bl_idname = "blendertools.export_ngtemplate"
     bl_label = "Export Node Group"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
@@ -120,6 +124,7 @@ class NODE_OT_export_ngtemplate(bpy.types.Operator):
 
         self.report({'INFO'}, f"Node group exported to {self.filepath}")
         return {'FINISHED'}
+
 
 def register():
     print("Registering Node Group Templates Operators")

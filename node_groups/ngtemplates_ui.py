@@ -1,6 +1,8 @@
 import bpy
 
+
 class NODE_PT_ngtemplates_panel(bpy.types.Panel):
+    """Node Templates UI Panel"""
     bl_space_type = 'NODE_EDITOR'
     bl_region_type = 'UI'
     bl_category = 'Blender Tools'
@@ -28,15 +30,18 @@ class NODE_PT_ngtemplates_panel(bpy.types.Panel):
         layout.operator("blendertools.add_node_group_template_modal")
         layout.operator("blendertools.import_ngtemplate")
 
+
 def templates_menu(self, context):
     layout = self.layout
     layout.separator()
     layout.menu("NODE_MT_ngtemplates_menu", text="Blender Tools Templates")
 
+
 def register():
     print("Registering Node Group Templates UI")
     bpy.utils.register_class(NODE_PT_ngtemplates_panel)
     bpy.types.NODE_MT_context_menu.append(templates_menu)
+
 
 def unregister():
     print("Unregistering Node Group Templates UI")

@@ -2,30 +2,31 @@ import bpy
 
 from . import addonprefs_props
 
+
 class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
-    """ Addon Preferences """
+    """Addon Preferences"""
 
     # IMPORTANT: This must match the addon folder name
     bl_idname = "blendertools"
 
-    auto_import_enabled: bpy.props.BoolProperty(
+    auto_import_enabled = bpy.props.BoolProperty(
         name="Enable Auto Import",
         description="Automatically import templates at addon startup",
         default=True
     )
 
-    additional_import_paths: bpy.props.CollectionProperty(
+    additional_import_paths = bpy.props.CollectionProperty(
         type=addonprefs_props.TemplatePathItem,
         name="Additional Paths"
     )
 
-    enable_armature: bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
-    enable_node_groups: bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
-    enable_workflow: bpy.props.BoolProperty(name="Enable Workflows", default=True)
-    enable_rpc_remote: bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
-    enable_softbody: bpy.props.BoolProperty(name="Enable Softbody Tools", default=True)
+    enable_armature = bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
+    enable_node_groups = bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
+    enable_workflow = bpy.props.BoolProperty(name="Enable Workflows", default=True)
+    enable_rpc_remote = bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
+    enable_softbody = bpy.props.BoolProperty(name="Enable Softbody Tools", default=True)
 
-    sbrebind_max_depth: bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
+    sbrebind_max_depth = bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
 
     def draw(self, context):
         layout = self.layout
@@ -53,14 +54,15 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
                 op = row.operator("blendertools.remove_template_path", text="", icon="X")
                 op.index = idx
 
-
         if self.enable_softbody:
             box = layout.box()
             box.label(text="Softbody Tools Settings", icon="PHYSICS")
             box.prop(self, "sbrebind_max_depth")
 
+
 def register():
     bpy.utils.register_class(BlendertoolsAddonPreferences)
+
 
 def unregister():
     bpy.utils.unregister_class(BlendertoolsAddonPreferences)

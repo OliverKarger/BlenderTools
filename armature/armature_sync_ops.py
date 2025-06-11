@@ -2,6 +2,7 @@ import bpy
 
 from . import armature_sync_utils
 
+
 class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
     """Performs various checks between Source and Target Armature"""
 
@@ -28,10 +29,14 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
             return all(abs(s - 1.0) < 1e-4 for s in obj.scale)
 
         if not is_uniform_scale(source):
-            messages.append(f"Source Armature '{source.name}' has non-uniform scale: {tuple(round(s, 3) for s in source.scale)}")
+            messages.append(
+                f"Source Armature '{source.name}' has non-uniform scale: {tuple(round(s, 3) for s in source.scale)}"
+            )
 
         if not is_uniform_scale(target):
-            messages.append(f"Target Armature '{target.name}' has non-uniform scale: {tuple(round(s, 3) for s in target.scale)}")
+            messages.append(
+                f"Target Armature '{target.name}' has non-uniform scale: {tuple(round(s, 3) for s in target.scale)}"
+            )
 
         # Relative scale difference
         scale_diff = tuple(round(ts - ss, 4) for ss, ts in zip(source.scale, target.scale))
@@ -48,10 +53,14 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
         messages.append(f"Bone Count: Source = {len(source_bones)}, Target = {len(target_bones)}")
 
         if missing_in_target:
-            messages.append(f"{len(missing_in_target)} bone(s) missing in Target: {', '.join(sorted(missing_in_target)[:5])}...")
+            messages.append(
+                f"{len(missing_in_target)} bone(s) missing in Target: {', '.join(sorted(missing_in_target)[:5])}..."
+            )
 
         if missing_in_source:
-            messages.append(f"{len(missing_in_source)} bone(s) missing in Source: {', '.join(sorted(missing_in_source)[:5])}...")
+            messages.append(
+                f"{len(missing_in_source)} bone(s) missing in Source: {', '.join(sorted(missing_in_source)[:5])}..."
+            )
 
         # --- Reporting ---
         if messages:
@@ -61,6 +70,7 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
             self.report({'INFO'}, "Armatures appear compatible.")
 
         return {"FINISHED"}
+
 
 class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
     """ Enumerates compatible Bones for Rig Sync 
@@ -106,17 +116,15 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
         self.report({"INFO"}, f"Found {len(matching_bones)} matching bones.")
         return {"FINISHED"}
 
+
 class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
-    """Enables Armature Sync by applying constraints to the target rig (follower)"""
+    """
+        Enables Armature Sync
+        by applying constraints to the target rig (follower)
+    """
 
     bl_idname = "blendertools.armature_sync_enable"
     bl_label = "Enable Armature Sync"
-
-    # CompensateScale: bpy.props.BoolProperty(
-    #     name="Compensate for Scale Difference",
-    #     description="Adjust constraint spaces to handle object scale mismatch",
-    #     default=False,
-    # )
 
     def invoke(self, context, event):
         props = context.scene.blendertools_armaturesync
@@ -186,6 +194,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
         self.report({'INFO'}, f"ync constraints applied to {applied_count} bones (target follows source).")
         return {"FINISHED"}
 
+
 class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
     """Disables Armature Sync by removing constraints from the target rig"""
 
@@ -219,7 +228,11 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
             pbone = target.pose.bones[target_bone_name]
 
-            to_remove = [c for c in pbone.constraints if c.name == "ArmatureSync"]
+            to_remove = [
+                c
+                for c in pbone.constraints
+                if c.name == "ArmatureSync"]
+      
             for c in to_remove:
                 pbone.constraints.remove(c)
                 removed_count += 1
@@ -228,6 +241,7 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
         self.report({'INFO'}, f"Removed {removed_count} sync constraints from target rig.")
         return {"FINISHED"}
+
 
 class BlenderTools_OT_set_armature_source(bpy.types.Operator):
     """Sets a Armature as Source Armature"""
@@ -238,8 +252,9 @@ class BlenderTools_OT_set_armature_source(bpy.types.Operator):
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
         props.source_armature = context.active_object
-        return { 'FINISHED' }
-    
+        return {"FINISHED"}
+
+
 class BlenderTools_OT_set_armature_target(bpy.types.Operator):
     """Sets a Armature as Target Armature"""
 
@@ -249,7 +264,8 @@ class BlenderTools_OT_set_armature_target(bpy.types.Operator):
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
         props.target_armature = context.active_object
-        return { 'FINISHED' }
+        return {"FINISHED"}
+
 
 def register():
     print("Registering Armature Sync Operators")
@@ -259,6 +275,7 @@ def register():
     bpy.utils.register_class(BlenderTools_ArmatureSyncCheck)
     bpy.utils.register_class(BlenderTools_OT_set_armature_source)
     bpy.utils.register_class(BlenderTools_OT_set_armature_target)
+
 
 def unregister():
     print("Unregistering Armature Sync Operators")

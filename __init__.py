@@ -1,3 +1,9 @@
+from . import armature
+from . import node_groups
+from . import preferences
+from . import rpc_remote
+from . import simulation
+
 bl_info = {
     "name": "Blender Tools",
     "description": "Collection of Blender Utilities",
@@ -7,11 +13,6 @@ bl_info = {
     "doc_url": "https://gitlab.karger.lan/oliver/blendertools",
 }
 
-from . import armature
-from . import node_groups
-from . import preferences
-from . import rpc_remote
-from . import simulation
 
 def register():
     preferences.register()
@@ -20,12 +21,14 @@ def register():
     rpc_remote.register()
     simulation.register()
 
+
 def unregister():
     simulation.unregister()
     armature.unregister()
     node_groups.unregister()
     preferences.unregister()
     rpc_remote.unregister()
+
 
 if __name__ == "__main__":
     register()

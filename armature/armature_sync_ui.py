@@ -1,25 +1,29 @@
 import bpy
 
+
 def view3d_context_menu(self, context):
+    """Context Menu"""
     addon = context.preferences.addons.get("blendertools")
     if not addon:
         return False
-    
+
     if not bpy.context.active_object.type == "ARMATURE":
         return
-    
+
     layout = self.layout
 
     layout.operator("blendertools.set_armature_source")
     layout.operator("blendertools.set_armature_target")
 
+
 class BONE_UL_bone_list(bpy.types.UIList):
+    """Bone List UI Control"""
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname, index
     ):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             row = layout.row()
-            
+
             if item.sync_enabled:
                 row.alert = True
 
@@ -33,6 +37,7 @@ class BONE_UL_bone_list(bpy.types.UIList):
 
 
 class VIEW3D_PT_armature_sync(bpy.types.Panel):
+    """Armature Sync UI Panel"""
     bl_label = "Armature Sync"
     bl_idname = "VIEW3D_PT_armature_sync"
     bl_space_type = "VIEW_3D"
@@ -71,12 +76,14 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
         row.operator("blendertools.armature_sync_enable", icon='LINKED')
         row.operator("blendertools.armature_sync_disable", icon='UNLINKED')
 
+
 def register():
     print("Registering Armature Sync UI")
     bpy.utils.register_class(BONE_UL_bone_list)
     bpy.utils.register_class(VIEW3D_PT_armature_sync)
 
     bpy.types.VIEW3D_MT_object_context_menu.append(view3d_context_menu)
+
 
 def unregister():
     print("Unregistering Armature Sync UI")
