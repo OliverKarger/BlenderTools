@@ -1,6 +1,7 @@
 import os
 import subprocess
 import io
+import tempfile
 
 from cli import constants
 
@@ -28,3 +29,28 @@ def invoke(opts: list[str], verbose: bool) -> tuple[str, bool]:
         return (process.returncode, False)
 
     return ("", True)
+
+def render(file: str, verbose: bool, output: str | None) -> tuple[str, bool]:
+    if not os.path.exists(file):
+        return (f"File {file} does not exist", False)
+    
+    # Create Temporary Blender Script
+    temp_dir = tempfile.gettempdir()
+    script_path = os.path.join(temp_dir, "blender_render.py")
+
+    if os.path.exists(script_path):
+        os.remove(script_path)
+
+    with open(script_path, "w") as f:
+        f.write("import bpy\n")
+        f.write("bpy.ops.render.render(write_still=True)\n")
+
+    args = [constants.BLENDER_PATH, "-b", file, "-y", "--python", script_path]
+
+    if output is not None:
+        args += ["-o", output]
+
+    result = invoke(args, verbose)
+    if result[1] == False:
+        return result
+    

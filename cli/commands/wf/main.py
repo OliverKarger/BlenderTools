@@ -27,6 +27,10 @@ def handle(args):
 
     if args.file:
         # Single file render
+
+        if args.verbose:
+            print(f"[INFO] Processing: {args.file}")
+
         if not args.dry_run:
             command = ["-b", args.file, "-y", "--python", args.python_file]
             blender.invoke(command, verbose=args.verbose)
@@ -45,7 +49,7 @@ def handle(args):
                 continue
 
             if args.verbose:
-                print(f"[INFO] Rendering: {filepath}")
+                print(f"[INFO] Processing: {filepath}")
 
             if not args.dry_run:
                 command = ["-b", filepath, "-y", "--python", args.python_file]
