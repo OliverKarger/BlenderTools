@@ -13,5 +13,8 @@
     // }
     "flake8.path": ["${workspaceFolder}\\.venv\\Scripts\\flake8.exe"],
     "flake8.enabled": true,
-    "zenMode.fullScreen": false
+    "zenMode.fullScreen": false,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportInvalidTypeForm": "none"
+      }
 }

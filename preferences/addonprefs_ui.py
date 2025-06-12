@@ -7,24 +7,24 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
     # IMPORTANT: This must match the addon folder name
     bl_idname = "blendertools"
 
-    auto_import_enabled = bpy.props.BoolProperty(
+    auto_import_enabled: bpy.props.BoolProperty(
         name="Enable Auto Import",
         description="Automatically import templates at addon startup",
         default=True
     )
 
-    additional_import_paths = bpy.props.CollectionProperty(
+    additional_import_paths: bpy.props.CollectionProperty(
         type=addonprefs_props.TemplatePathItem,
         name="Additional Paths"
     )
 
-    enable_armature = bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
-    enable_node_groups = bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
-    enable_workflow = bpy.props.BoolProperty(name="Enable Workflows", default=True)
-    enable_rpc_remote = bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
-    enable_softbody = bpy.props.BoolProperty(name="Enable Softbody Tools", default=True)
+    enable_armature: bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
+    enable_node_groups: bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
+    enable_workflow: bpy.props.BoolProperty(name="Enable Workflows", default=True)
+    enable_rpc_remote: bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
+    enable_softbody: bpy.props.BoolProperty(name="Enable Softbody Tools", default=True)
 
-    sbrebind_max_depth = bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
+    sbrebind_max_depth: bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
 
     def draw(self, context):
         layout = self.layout
@@ -38,7 +38,6 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
         enable_box.prop(self, "enable_rpc_remote")
         enable_box.prop(self, "enable_softbody")
 
-        # --- Additional Template Paths (Shown Only if Enabled) ---
         if self.enable_node_groups:
             box = layout.box()
             box.label(text="Node Group Tools Settings", icon="NODE")
@@ -56,6 +55,11 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
             box = layout.box()
             box.label(text="Softbody Tools Settings", icon="PHYSICS")
             box.prop(self, "sbrebind_max_depth")
+
+        cli_box = layout.box()
+        cli_box.label(text="Command Line Interface")
+        cli_box.operator("blendertools.install_cli")
+        cli_box.operator("blendertools.uninstall_cli")
 
 
 def register():

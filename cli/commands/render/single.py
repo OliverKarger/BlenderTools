@@ -9,7 +9,6 @@ def setup(parser: argparse.ArgumentParser):
     parser.add_argument("-i", "--input", help="Input File", required=True)
     parser.add_argument("-o", "--output", help="Output File (optional, defaults to Blender's internal path)", required=False)
     parser.add_argument("-off", "--output-file-format", help="Output File Format", default="TIFF", required=False)
-    # ❌ Don't add --dry-run here, it's global
 
 def handle(args):
     input_file = args.input
