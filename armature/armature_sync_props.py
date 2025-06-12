@@ -4,8 +4,6 @@ from ..blender.constraint import CONSTRAINT_MIX_MODE
 
 
 class BlenderTools_ArmatureSyncBone(bpy.types.PropertyGroup):
-    """Contains Information about a Bone"""
-
     name = bpy.props.StringProperty(name="Bone Name")
     linked_name = bpy.props.StringProperty(name="Linked Bone Name")
     source_armature = bpy.props.PointerProperty(name="Source Armature", type=bpy.types.Object)
@@ -15,10 +13,6 @@ class BlenderTools_ArmatureSyncBone(bpy.types.PropertyGroup):
 
 
 class BlenderTools_ArmatureSyncProps(bpy.types.PropertyGroup):
-    """ Contains Data for Armature Sync 
-        This class is only used for the UI!
-    """
-
     source_armature = bpy.props.PointerProperty(name="Source Armature", type=bpy.types.Object)
     target_armature = bpy.props.PointerProperty(name="Target Armature", type=bpy.types.Object)
     bones = bpy.props.CollectionProperty(type=BlenderTools_ArmatureSyncBone)

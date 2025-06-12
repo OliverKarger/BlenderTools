@@ -6,7 +6,6 @@ from . import ngtemplates_utils
 
 
 class NODE_OT_import_node_group_template(bpy.types.Operator):
-    """Import Node Group Template from JSON"""
     bl_idname = "blendertools.import_ngtemplate"
     bl_label = "Import Node Group Template"
     bl_options = {'REGISTER', 'UNDO'}
@@ -34,8 +33,6 @@ class NODE_OT_import_node_group_template(bpy.types.Operator):
 
 
 class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
-    """Modal for Template Generation"""
-
     bl_idname = "blendertools.add_node_group_template_modal"
     bl_label = "Insert Node Group Template"
     bl_description = "Choose a TEMPLATE_ node group to insert into the current node tree"
@@ -76,7 +73,6 @@ class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
 
 
 class NODE_OT_add_ngtemplate_instance(bpy.types.Operator):
-    """Creates Instanceof Node Group Template"""
     bl_idname = "blendertools.add_node_group_instance"
     bl_label = "Add Node Group Template"
     bl_options = {'REGISTER', 'UNDO'}
@@ -100,7 +96,6 @@ class NODE_OT_add_ngtemplate_instance(bpy.types.Operator):
 
 
 class NODE_OT_export_ngtemplate(bpy.types.Operator):
-    """Export Node Group to JSON"""
     bl_idname = "blendertools.export_ngtemplate"
     bl_label = "Export Node Group"
     bl_options = {'REGISTER', 'UNDO'}

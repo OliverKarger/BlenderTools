@@ -2,7 +2,6 @@ import bpy
 
 
 def view3d_context_menu(self, context):
-    """Context Menu"""
     addon = context.preferences.addons.get("blendertools")
     if not addon:
         return False
@@ -17,7 +16,6 @@ def view3d_context_menu(self, context):
 
 
 class BONE_UL_bone_list(bpy.types.UIList):
-    """Bone List UI Control"""
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname, index
     ):
@@ -37,7 +35,6 @@ class BONE_UL_bone_list(bpy.types.UIList):
 
 
 class VIEW3D_PT_armature_sync(bpy.types.Panel):
-    """Armature Sync UI Panel"""
     bl_label = "Armature Sync"
     bl_idname = "VIEW3D_PT_armature_sync"
     bl_space_type = "VIEW_3D"

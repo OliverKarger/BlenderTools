@@ -1,5 +1,4 @@
 def has_significant_scale_difference(obj_a, obj_b, threshold=0.01):
-    """Checks if two Objects have a Uniform Scale within the provided Threshold"""
     def is_uniform(obj, epsilon=1e-4):
         sx, sy, sz = obj.scale
         return abs(sx - sy) < epsilon and abs(sx - sz) < epsilon and abs(sy - sz) < epsilon

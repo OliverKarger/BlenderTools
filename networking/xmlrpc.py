@@ -7,19 +7,16 @@ server_instance = None
 
 
 class XmlRpcServer:
-    """RPC Server for Blender Remote Control"""
     def __init__(self, ip: str, port: int):
         self.server = xmlrpcserver.SimpleXMLRPCServer((ip, port), allow_none=True, logRequests=True)
         self.thread = threading.Thread(target=self.__serve, daemon=True)
 
     def start(self):
-        """Starts the Server"""
         self.thread.start()
         print("Started Xml Rpc Server!")
         pass
 
     def __serve(self):
-        """Internal Function which handles Requests"""
         while not stop_event.is_set():
             print("Awaiting Requests")
             self.server.handle_request()

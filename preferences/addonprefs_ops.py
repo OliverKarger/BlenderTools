@@ -2,8 +2,6 @@ import bpy
 
 
 class OT_AddTemplatePath(bpy.types.Operator):
-    """ Adds a Template Path from Preferences"""
-
     bl_idname = "blendertools.add_template_path"
     bl_label = "Add Template Path"
 
@@ -14,8 +12,6 @@ class OT_AddTemplatePath(bpy.types.Operator):
 
 
 class OT_RemoveTemplatePath(bpy.types.Operator):
-    """ Removes a Template Path from Preferences"""
-
     bl_idname = "blendertools.remove_template_path"
     bl_label = "Remove Template Path"
 

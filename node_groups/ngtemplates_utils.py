@@ -4,8 +4,6 @@ import os
 
 
 def serialize_node_group(group):
-    """Serializes a Node Group into Json"""
-
     # Tag the node group as a template
     group["is_template"] = True
 
@@ -50,7 +48,6 @@ def serialize_node_group(group):
 
 
 def get_template_node_groups(self, context):
-    """Returns Node Groups that are marked as Template"""
     return [
         (group.name, group.name, "")
         for group in bpy.data.node_groups
@@ -59,7 +56,6 @@ def get_template_node_groups(self, context):
 
 
 def import_template_from_file(filepath):
-    """Imports a Node Group Template from File"""
     with open(filepath, 'r') as f:
         data = json.load(f)
 
@@ -95,8 +91,6 @@ def import_template_from_file(filepath):
 
 
 def auto_import_templates():
-    """Auto Imports Node Group Templates from Addon Preferences on Startup"""
-
     addon = bpy.context.preferences.addons.get("blendertools")
     if not addon:
         return None

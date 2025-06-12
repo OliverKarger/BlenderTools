@@ -4,8 +4,6 @@ from ..networking import socket, xmlrpc
 
 
 class BlenderTools_RpcRemoteCheckAddress(bpy.types.Operator):
-    """Operator to Check if the specified IP and Port are already in use"""
-
     bl_idname = "blendertools.rpcremote_checkaddress"
     bl_label = "Check Server"
 
@@ -30,8 +28,6 @@ class BlenderTools_RpcRemoteCheckAddress(bpy.types.Operator):
 
 
 class BlenderTools_RpcRemoteStartServer(bpy.types.Operator):
-    """Operator to start the RPC Server"""
-
     bl_idname = "blendertools.rpcremote_startserver"
     bl_label = "Start Server"
 
@@ -48,8 +44,6 @@ class BlenderTools_RpcRemoteStartServer(bpy.types.Operator):
 
 
 class BlenderTools_RpcRemoteStopServer(bpy.types.Operator):
-    """Operator to stop the RPC Server"""
-
     bl_idname = "blendertools.rpcremote_stopserver"
     bl_label = "Stop Server"
 

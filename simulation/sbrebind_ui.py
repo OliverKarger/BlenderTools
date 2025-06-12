@@ -2,8 +2,6 @@ import bpy
 
 
 class VIEW3D_PT_sbrebind(bpy.types.Panel):
-    """Softbody Rebind UI Panel"""
-
     bl_label = "Softbody Rebind"
     bl_idname = "VIEW3D_PT_sbrebind"
     bl_space_type = "VIEW_3D"

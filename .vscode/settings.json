@@ -11,4 +11,6 @@
     //     "reportUnknownMemberType": "error",
     //     "reportUnknownArgumentType": "error"
     // }
+    "flake8.path": ["${workspaceFolder}\\.venv\\Scripts\\flake8.exe"],
+    "flake8.enabled": true
 }

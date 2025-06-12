@@ -2,8 +2,6 @@ import bpy
 
 
 class BlenderTools_SBRebindRecursive(bpy.types.Operator):
-    """Recursively rebind all Surface/Mesh Deform Modifiers on children of the active object"""
-
     bl_idname = "blendertools.sbrebindrecursive"
     bl_label = "Rebind Softbody"
 

@@ -4,8 +4,6 @@ from . import addonprefs_props
 
 
 class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
-    """Addon Preferences"""
-
     # IMPORTANT: This must match the addon folder name
     bl_idname = "blendertools"
 

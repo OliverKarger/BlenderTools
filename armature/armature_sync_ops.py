@@ -4,8 +4,6 @@ from . import armature_sync_utils
 
 
 class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
-    """Performs various checks between Source and Target Armature"""
-
     bl_idname = "blendertools.armature_sync_check"
     bl_label = "Check Compatibility"
 
@@ -73,10 +71,6 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
-    """ Enumerates compatible Bones for Rig Sync 
-        Takes differences between MHX/Rigify into account
-    """
-
     bl_idname = "blendertools.armature_sync_enum"
     bl_label = "Enumerate Bones"
 
@@ -118,11 +112,6 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
-    """
-        Enables Armature Sync
-        by applying constraints to the target rig (follower)
-    """
-
     bl_idname = "blendertools.armature_sync_enable"
     bl_label = "Enable Armature Sync"
 
@@ -196,8 +185,6 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
-    """Disables Armature Sync by removing constraints from the target rig"""
-
     bl_idname = "blendertools.armature_sync_disable"
     bl_label = "Disable Armature Sync"
 
@@ -244,8 +231,6 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
 
 class BlenderTools_OT_set_armature_source(bpy.types.Operator):
-    """Sets a Armature as Source Armature"""
-
     bl_idname = "blendertools.set_armature_source"
     bl_label = "Set as Source Armature"
 
@@ -256,8 +241,6 @@ class BlenderTools_OT_set_armature_source(bpy.types.Operator):
 
 
 class BlenderTools_OT_set_armature_target(bpy.types.Operator):
-    """Sets a Armature as Target Armature"""
-
     bl_idname = "blendertools.set_armature_target"
     bl_label = "Set as Target Armature"
 
@@ -278,7 +261,6 @@ def register():
 
 
 def unregister():
-    print("Unregistering Armature Sync Operators")
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncEnum)
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncEnable)
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncDisable)

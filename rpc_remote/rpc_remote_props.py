@@ -2,8 +2,6 @@ import bpy
 
 
 class BlenderTools_RpcRemoteProps(bpy.types.PropertyGroup):
-    """ Rpc Remote Server Settings """
-
     ip = bpy.props.StringProperty(name="IP Address", default="127.0.0.1")
     port = bpy.props.StringProperty(name="Port", default="55643")
 

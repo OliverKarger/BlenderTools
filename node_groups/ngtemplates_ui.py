@@ -2,7 +2,6 @@ import bpy
 
 
 class NODE_PT_ngtemplates_panel(bpy.types.Panel):
-    """Node Templates UI Panel"""
     bl_space_type = 'NODE_EDITOR'
     bl_region_type = 'UI'
     bl_category = 'Blender Tools'

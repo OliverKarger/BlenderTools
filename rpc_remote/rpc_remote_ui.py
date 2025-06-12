@@ -2,8 +2,6 @@ import bpy
 
 
 class VIEW3D_PT_rpc_remote(bpy.types.Panel):
-    """RPC Remote UI Panel"""
-
     bl_label = "RPC Remote"
     bl_idname = "VIEW3D_PT_rpc_remote"
     bl_space_type = "VIEW_3D"
