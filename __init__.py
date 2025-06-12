@@ -3,6 +3,7 @@ from . import node_groups
 from . import preferences
 from . import rpc_remote
 from . import simulation
+from . import cli
 
 bl_info = {
     "name": "Blender Tools",
@@ -20,9 +21,11 @@ def register():
     node_groups.register()
     rpc_remote.register()
     simulation.register()
+    cli.register()
 
 
 def unregister():
+    cli.unregister()
     simulation.unregister()
     armature.unregister()
     node_groups.unregister()
