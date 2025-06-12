@@ -1,24 +1,39 @@
 import argparse
 import importlib.util
 import pathlib
+import sys
 
 BASE_COMMANDS_DIR = pathlib.Path(__file__).parent / "commands"
 
+
 def import_command_module(path: pathlib.Path):
-    """Import a module from a file path."""
-    spec = importlib.util.spec_from_file_location(
-        name=path.stem,
-        location=str(path)
-    )
+    """Import a module from a given file path."""
+    spec = importlib.util.spec_from_file_location(name=path.stem, location=str(path))
+    if spec is None or spec.loader is None:
+        print(f"[ERROR] Cannot import module from {path}")
+        sys.exit(1)
+
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
 
+
+def ensure_module_attributes(module, path, required_attrs):
+    """Ensure a module has all required attributes, or exit."""
+    for attr in required_attrs:
+        if not hasattr(module, attr):
+            print(f"[ERROR] '{path}' is missing required attribute: {attr}")
+            sys.exit(1)
+
+
 def parse():
+    # Global flags
     global_parser = argparse.ArgumentParser(add_help=False)
     global_parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
     global_parser.add_argument("-oe", "--on-exit", type=str, help="Action to perform on exit")
+    global_parser.add_argument("-dr", "--dry-run", help="Dry Run", default=False, action="store_true")
 
+    # Root CLI parser
     parser = argparse.ArgumentParser(
         prog="BlenderTools CLI",
         description="Command Line Interface Tools",
@@ -32,21 +47,25 @@ def parse():
             continue
 
         group_name = group_dir.name
-
-        # Check for main.py to allow folder to act as single command
         main_command_file = group_dir / "main.py"
-        if main_command_file.exists():
-            module = import_command_module(main_command_file)
 
-            if not all(hasattr(module, attr) for attr in ["COMMAND_NAME", "HELP", "setup"]):
-                raise ValueError(f"{main_command_file} must define COMMAND_NAME, HELP, and setup()")
+        if main_command_file.exists():
+            # Handle single-command group (e.g., wf)
+            module = import_command_module(main_command_file)
+            ensure_module_attributes(module, main_command_file, ["COMMAND_NAME", "HELP", "setup"])
 
             group_parser = main_subparsers.add_parser(group_name, help=module.HELP, parents=[global_parser])
             module.setup(group_parser)
-            group_parser.set_defaults(handler=getattr(module, "handle", None))
+
+            handler = getattr(module, "handle", None)
+            if not callable(handler):
+                print(f"[ERROR] '{main_command_file}' must define a callable 'handle(args)' function")
+                sys.exit(1)
+
+            group_parser.set_defaults(handler=handler)
 
         else:
-            # Otherwise treat as a group of subcommands
+            # Handle multi-command group (e.g., render/single.py, render/batch.py)
             group_parser = main_subparsers.add_parser(group_name, help=f"{group_name} commands", parents=[global_parser])
             group_subparsers = group_parser.add_subparsers(dest="command", required=True)
 
@@ -55,14 +74,25 @@ def parse():
                     continue
 
                 module = import_command_module(file)
-
-                if not hasattr(module, "COMMAND_NAME") or not hasattr(module, "HELP") or not hasattr(module, "setup"):
-                    raise ValueError(f"{file} must define COMMAND_NAME, HELP, and setup()")
+                ensure_module_attributes(module, file, ["COMMAND_NAME", "HELP", "setup"])
 
                 subparser = group_subparsers.add_parser(module.COMMAND_NAME, help=module.HELP, parents=[global_parser])
                 module.setup(subparser)
-                subparser.set_defaults(handler=getattr(module, "handle", None))
-                
+
+                handler = getattr(module, "handle", None)
+                if not callable(handler):
+                    print(f"[ERROR] '{file}' must define a callable 'handle(args)' function")
+                    sys.exit(1)
+
+                subparser.set_defaults(handler=handler)
+
     args = parser.parse_args()
-    print(args.__dict__)
+
+    if args.verbose:
+        print("[DEBUG] Parsed args:", vars(args))
+
+    if not hasattr(args, "handler") or not callable(args.handler):
+        print("[ERROR] No valid handler defined for the selected command.")
+        sys.exit(1)
+
     return args
