@@ -36,7 +36,7 @@ def handle(args: list[str]):
 
         if not args.dry_run:
             command = ["-b", args.file, "-y", "--python", args.python_file]
-            blender.invoke(command, verbose=args.verbose)
+            blender.invoke(command)
         return
 
     if args.file_pattern:
