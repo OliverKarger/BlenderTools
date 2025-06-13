@@ -3,6 +3,7 @@ from . import node_groups
 from . import preferences
 from . import rpc_remote
 from . import simulation
+from . import cli
 # from . import octane
 
 bl_info = {
@@ -16,6 +17,7 @@ bl_info = {
 
 
 def register():
+    cli.register()
     preferences.register()
     armature.register()
     node_groups.register()
@@ -25,6 +27,7 @@ def register():
 
 
 def unregister():
+    cli.unregister()
     simulation.unregister()
     armature.unregister()
     node_groups.unregister()
