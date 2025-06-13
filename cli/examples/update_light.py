@@ -9,3 +9,4 @@ light_object_data = light_object.data
 
 light_object_data.energy = 1000
 
+# bpy.ops.wm.save_mainfile()
