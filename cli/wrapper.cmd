@@ -4,7 +4,7 @@ title BlenderTools CLI
 setlocal
 
 :: Go into Addon Directory
-cd "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools"
+pushd "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools"
 
 :: Check if Python Virtual Environment exists
 if exist ".venv" (
@@ -21,5 +21,7 @@ pip install -r requirements.txt >nul 2>&1
 
 :: Pass Arguments to CLI
 python -m cli %*
+
+popd
 
 endlocal
