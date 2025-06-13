@@ -6,15 +6,7 @@ class BlenderTools_OT_convert_lightsource_to_octane(bpy.types.Operator):
 
     def execute(self, context):
 
-        if context.scene.render.engine != 'octane':
-            self.report({"ERROR"}, "Please set Render Engine to Octane!")
-            return {"CANCELLED"}
-
         obj = context.object
-        if obj is None or obj.type != "LIGHT":
-            self.report({"ERROR"}, "Selected Object is not a Light!")
-            return {"CANCELLED"}
-
         light_data = obj.data
         light_type = light_data.type
 
