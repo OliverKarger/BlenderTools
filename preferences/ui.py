@@ -60,8 +60,8 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
 
         cli_box = layout.box()
         cli_box.label(text="Command Line Interface")
-        cli_box.operator("blendertools.cli_install")
-        cli_box.operator("blendertools.cli_uninstall")
+        cli_box.operator("blendertools.install_wrapper_script")
+        cli_box.operator("blendertools.uninstall_wrapper_script")
 
 
 def register():

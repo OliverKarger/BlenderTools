@@ -2,7 +2,7 @@ import os
 import sys
 import winreg
 
-from cli import bt_logger
+from .. import bt_logger
 logger = bt_logger.get_logger(__name__)
 
 APPDATA = os.environ["APPDATA"]
