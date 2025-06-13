@@ -1,15 +1,30 @@
 import logging
 import sys
 
+class ColorFormatter(logging.Formatter):
+    COLORS = {
+        'DEBUG': '\033[94m',    # Blue
+        'INFO': '\033[92m',     # Green
+        'WARNING': '\033[93m',  # Yellow
+        'ERROR': '\033[91m',    # Red
+        'CRITICAL': '\033[95m', # Magenta
+    }
+    RESET = '\033[0m'
+
+    def format(self, record):
+        color = self.COLORS.get(record.levelname, self.RESET)
+        message = super().format(record)
+        return f"{color}{message}{self.RESET}"
+
 def get_logger(name: str) -> logging.Logger:
-    new_logger = logging.getLogger(name)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False  # Prevent log duplication via parent
 
-    formatter = logging.Formatter('%(levelname)s:%(name)s: %(message)s')
+    if not logger.handlers:
+        formatter = ColorFormatter("%(levelname)s:%(name)s: %(message)s")
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
-
-    new_logger.setLevel(logging.DEBUG)
-    new_logger.handlers = []
-    new_logger.addHandler(handler)
-    return new_logger
+    return logger
