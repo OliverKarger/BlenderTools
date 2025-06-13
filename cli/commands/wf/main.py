@@ -3,8 +3,8 @@ import os
 import glob
 
 from cli.utils import blender
-import bt_logger
 
+import bt_logger
 logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "wf"
@@ -36,7 +36,7 @@ def handle(args: list[str]):
 
         if not args.dry_run:
             command = ["-b", args.file, "-y", "--python", args.python_file]
-            blender.invoke(command, verbose=args.verbose)
+            blender.invoke(command)
         return
 
     if args.file_pattern:

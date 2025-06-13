@@ -6,7 +6,6 @@ import tempfile
 from cli import constants
 
 import bt_logger
-
 logger = bt_logger.get_logger(__name__)
 
 def invoke(opts: list[str]) -> bool:
@@ -26,16 +25,16 @@ def invoke(opts: list[str]) -> bool:
     
     with io.TextIOWrapper(process.stdout, encoding="utf-8", errors="replace") as stdout:
         for line in stdout:
-            formatted_line = f"BLENDER | {line}"
+            formatted_line = f"BLENDER | {line.rstrip()}"
             logger.debug(formatted_line)
 
-    if process.wait != 0:
+    if process.wait != 0 and process.returncode is not None:
         logger.fatal(f"Blender Error ({process.returncode})")
         return False
 
     return ("", True)
 
-def render(file: str, verbose: bool, output: str | None) -> bool:
+def render(file: str, verbose: bool, output: str, output_format: str = "TIFF") -> bool:
     if not os.path.exists(file):
         logger.error(f"File {file} does not exist!")
         return False
@@ -49,14 +48,17 @@ def render(file: str, verbose: bool, output: str | None) -> bool:
 
     with open(script_path, "w") as f:
         f.write("import bpy\n")
+        f.write(f"bpy.context.scene.render.image_settings.file_format=\"{output_format}\"\n")
+        f.write(f"bpy.context.scene.render.filepath = r\"{output}\"\n")
         f.write("bpy.ops.render.render(write_still=True)\n")
 
-    args = [constants.BLENDER_PATH, "-b", file, "-y", "--python", script_path]
+    args = ["-b", file, "-y", "--python", script_path]
 
     if output is not None:
         args += ["-o", output]
 
-    result = invoke(args, verbose)
-    if result[1] == False:
-        return result
-    
+    result = invoke(args)
+
+    os.remove(script_path)
+
+    return result

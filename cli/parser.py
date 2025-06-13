@@ -3,11 +3,10 @@ import importlib.util
 import pathlib
 import sys
 
-import bt_logger
+from . import bt_logger
 logger = bt_logger.get_logger(__name__)
 
 BASE_COMMANDS_DIR = pathlib.Path(__file__).parent / "commands"
-
 
 def import_command_module(path: pathlib.Path):
     """Import a module from a given file path."""
@@ -26,7 +25,7 @@ def ensure_module_attributes(module, path, required_attrs):
     """Ensure a module has all required attributes, or exit."""
     for attr in required_attrs:
         if not hasattr(module, attr):
-            logger.error(f"'{path}' is missing required attribute: {attr}")
+            logger.warning(f"'{path}' is missing required attribute: {attr}")
             sys.exit(1)
 
 
