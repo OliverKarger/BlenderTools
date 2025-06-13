@@ -12,6 +12,6 @@ def register():
 
 
 def unregister():
-    logger.info("Unregistering Softbody Rebind Tools")
+    logger.debug("Unregistering Softbody Rebind Tools")
     sbrebind_ui.unregister()
     sbrebind_ops.unregister()

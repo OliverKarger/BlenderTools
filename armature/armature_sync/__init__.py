@@ -16,7 +16,7 @@ def register():
 
 
 def unregister():
-    logger.info("Unregistering Armature Sync Tools")
+    logger.debug("Unregistering Armature Sync Tools")
     armature_sync_ui.unregister()
     armature_sync_ops.unregister()
     armature_sync_props.unregister()

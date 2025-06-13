@@ -8,5 +8,5 @@ def register():
     armature_sync.register()
 
 def unregister():
-    logger.info("Unregistering Armature Tools")
+    logger.debug("Unregistering Armature Tools")
     armature_sync.unregister()

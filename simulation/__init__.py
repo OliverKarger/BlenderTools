@@ -10,5 +10,5 @@ def register():
 
 
 def unregister():
-    logger.info("Unregistering Simulation Tools")
+    logger.debug("Unregistering Simulation Tools")
     softbody_rebind.unregister()

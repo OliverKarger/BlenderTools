@@ -8,5 +8,5 @@ def register():
     ngtemplates.register()
 
 def unregister():
-    logger.info("Unregistering Node Group Tools")
+    logger.debug("Unregistering Node Group Tools")
     ngtemplates.unregister()

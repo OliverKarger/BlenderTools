@@ -14,7 +14,7 @@ def register():
 
 
 def unregister():
-    logger.info("Unregistering Preferences")
+    logger.debug("Unregistering Preferences")
     addonprefs_ops.unregister()
     addonprefs_ui.unregister()
     addonprefs_props.unregister()

@@ -14,7 +14,7 @@ def register():
 
 
 def unregister():
-    logger.info("Unregistering RPC Remote Tools")
+    logger.debug("Unregistering RPC Remote Tools")
     rpc_remote_ops.unregister()
     rpc_remote_ui.unregister()
     rpc_remote_props.unregister()

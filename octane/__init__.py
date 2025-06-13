@@ -8,5 +8,5 @@ def register():
     # light_converter.register()
 
 def unregister():
-    logger.info("Unregistering Octane Tools")
+    logger.debug("Unregistering Octane Tools")
     # light_converter.unregister()
