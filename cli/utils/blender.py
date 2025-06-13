@@ -25,10 +25,10 @@ def invoke(opts: list[str]) -> bool:
     
     with io.TextIOWrapper(process.stdout, encoding="utf-8", errors="replace") as stdout:
         for line in stdout:
-            formatted_line = f"BLENDER | {line}"
+            formatted_line = f"BLENDER | {line.rstrip()}"
             logger.debug(formatted_line)
 
-    if process.wait != 0:
+    if process.wait != 0 and process.returncode is not None:
         logger.fatal(f"Blender Error ({process.returncode})")
         return False
 
