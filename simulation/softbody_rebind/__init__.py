@@ -1,17 +1,17 @@
 from .. import bt_logger
 
-from . import sbrebind_ui
-from . import sbrebind_ops
+from . import ui
+from . import operators
 
 logger = bt_logger.get_logger(__name__)
 
 def register():
     logger.info("Registering Softbody Rebind Tools")
-    sbrebind_ops.register()
-    sbrebind_ui.register()
+    operators.register()
+    ui.register()
 
 
 def unregister():
     logger.debug("Unregistering Softbody Rebind Tools")
-    sbrebind_ui.unregister()
-    sbrebind_ops.unregister()
+    ui.unregister()
+    operators.unregister()

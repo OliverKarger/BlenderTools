@@ -1,20 +1,20 @@
 from .. import bt_logger
 
-from . import addonprefs_ops
-from . import addonprefs_ui
-from . import addonprefs_props
+from . import operators
+from . import ui
+from . import properties
 
 logger = bt_logger.get_logger(__name__)
 
 def register():
     logger.info("Registering Preferences")
-    addonprefs_props.register()
-    addonprefs_ui.register()
-    addonprefs_ops.register()
+    properties.register()
+    ui.register()
+    operators.register()
 
 
 def unregister():
     logger.debug("Unregistering Preferences")
-    addonprefs_ops.unregister()
-    addonprefs_ui.unregister()
-    addonprefs_props.unregister()
+    operators.unregister()
+    ui.unregister()
+    properties.unregister()

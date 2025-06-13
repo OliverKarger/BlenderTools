@@ -1,15 +1,15 @@
 import bpy
 
 from .. import bt_logger
-from . import ngtemplates_ops
-from . import ngtemplates_ui
+from . import operators
+from . import ui
 
 logger = bt_logger.get_logger(__name__)
 
 def register():
     logger.info("Registering Node Group Tools")
-    ngtemplates_ops.register()
-    ngtemplates_ui.register()
+    operators.register()
+    ui.register()
 
     # Needs to run later so the Python Environment is fully initialized/available
     # bpy.app.timers.register(ngtemplates_utils.auto_import_templates, first_interval=5)
@@ -17,5 +17,5 @@ def register():
 
 def unregister():
     logger.debug("Unregistering Node Group Tools")
-    ngtemplates_ops.unregister()
-    ngtemplates_ui.unregister()
+    operators.unregister()
+    ui.unregister()

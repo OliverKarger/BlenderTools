@@ -2,7 +2,7 @@ import bpy
 import json
 import os
 
-from . import ngtemplates_utils
+from . import utils
 
 
 class NODE_OT_import_node_group_template(bpy.types.Operator):
@@ -22,7 +22,7 @@ class NODE_OT_import_node_group_template(bpy.types.Operator):
             return {'CANCELLED'}
 
         try:
-            ngtemplates_utils.import_template_from_file(self.filepath)
+            utils.import_template_from_file(self.filepath)
 
             self.report({'INFO'}, f"Node group imported successfully")
             return {'FINISHED'}
@@ -41,7 +41,7 @@ class NODE_OT_add_ngtemplate_instance_modal(bpy.types.Operator):
     group_name = bpy.props.EnumProperty(
         name="Template",
         description="Select a node group template",
-        items=ngtemplates_utils.get_template_node_groups
+        items=utils.get_template_node_groups
     )
 
     def invoke(self, context, event):
@@ -112,7 +112,7 @@ class NODE_OT_export_ngtemplate(bpy.types.Operator):
             self.report({'ERROR'}, "No valid node group selected")
             return {'CANCELLED'}
 
-        data = ngtemplates_utils.serialize_node_group(node.node_tree)
+        data = utils.serialize_node_group(node.node_tree)
 
         with open(f"{self.filepath}.json", 'w') as f:
             json.dump(data, f, indent=4)

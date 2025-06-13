@@ -1,6 +1,6 @@
 import bpy
 
-from . import armature_sync_utils
+from . import utils
 
 
 class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
@@ -124,7 +124,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
             self.report({"ERROR"}, "Please set Source and Target Armature!")
             return {'CANCELLED'}
 
-        if armature_sync_utils.has_significant_scale_difference(source, target):
+        if utils.has_significant_scale_difference(source, target):
             return context.window_manager.invoke_props_dialog(self)
 
         return self.execute(context)

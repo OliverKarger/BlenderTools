@@ -1,6 +1,6 @@
 import bpy
 
-from . import addonprefs_props
+from . import properties
 
 
 class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
@@ -14,7 +14,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
     )
 
     additional_import_paths: bpy.props.CollectionProperty(
-        type=addonprefs_props.TemplatePathItem,
+        type=properties.TemplatePathItem,
         name="Additional Paths"
     )
 
