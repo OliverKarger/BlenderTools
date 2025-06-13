@@ -3,7 +3,6 @@ import argparse
 from cli.utils import blender
 
 import bt_logger
-
 logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "single"

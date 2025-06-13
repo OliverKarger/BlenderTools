@@ -3,7 +3,7 @@ import importlib.util
 import pathlib
 import sys
 
-import bt_logger
+from . import bt_logger
 logger = bt_logger.get_logger(__name__)
 
 BASE_COMMANDS_DIR = pathlib.Path(__file__).parent / "commands"

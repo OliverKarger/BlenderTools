@@ -1,7 +1,7 @@
 import logging
 
 from . import parser
-from .. import bt_logger
+from . import bt_logger
 
 def main():
     bt_logger.global_log_level = logging.CRITICAL

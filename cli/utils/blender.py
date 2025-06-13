@@ -6,7 +6,6 @@ import tempfile
 from cli import constants
 
 import bt_logger
-
 logger = bt_logger.get_logger(__name__)
 
 def invoke(opts: list[str]) -> bool:
