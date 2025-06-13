@@ -65,10 +65,8 @@ class BlenderTools_SBRebindRecursive(bpy.types.Operator):
 
 
 def register():
-    print("Registering Softbody Rebind Operators")
     bpy.utils.register_class(BlenderTools_SBRebindRecursive)
 
 
 def unregister():
-    print("Unregistering Softbody Rebind Operators")
     bpy.utils.unregister_class(BlenderTools_SBRebindRecursive)

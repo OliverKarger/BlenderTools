@@ -1,15 +1,12 @@
-from . import armature_sync_ops
-from . import armature_sync_ui
-from . import armature_sync_props
+from .. import bt_logger
+from . import armature_sync
 
+logger = bt_logger.get_logger(__name__)
 
 def register():
-    armature_sync_props.register()
-    armature_sync_ops.register()
-    armature_sync_ui.register()
-
+    logger.info("Registering Armature Tools")
+    armature_sync.register()
 
 def unregister():
-    armature_sync_ui.unregister()
-    armature_sync_ops.unregister()
-    armature_sync_props.unregister()
+    logger.info("Unregistering Armature Tools")
+    armature_sync.unregister()

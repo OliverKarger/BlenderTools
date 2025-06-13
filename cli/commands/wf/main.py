@@ -12,7 +12,7 @@ def setup(parser: argparse.ArgumentParser):
     parser.add_argument("-f", "--file", help="Path to Blender File", required=False)
     parser.add_argument("-fp", "--file-pattern", help="File Pattern for Blender Files", required=False)
 
-def handle(args):
+def handle(args: list[str]):
     if args.file is None and args.file_pattern is None:
         print("[ERROR] Either specify --file or --file-pattern")
         return

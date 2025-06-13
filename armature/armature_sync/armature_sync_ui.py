@@ -75,7 +75,6 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
 
 
 def register():
-    print("Registering Armature Sync UI")
     bpy.utils.register_class(BONE_UL_bone_list)
     bpy.utils.register_class(VIEW3D_PT_armature_sync)
 
@@ -83,7 +82,6 @@ def register():
 
 
 def unregister():
-    print("Unregistering Armature Sync UI")
     bpy.utils.unregister_class(VIEW3D_PT_armature_sync)
     bpy.utils.unregister_class(BONE_UL_bone_list)
 

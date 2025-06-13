@@ -1,10 +1,12 @@
 import threading
 import xmlrpc.server as xmlrpcserver
 
+from .. import bt_logger
+logger = bt_logger.get_logger(__name__)
+
 stop_event = threading.Event()
 
 server_instance = None
-
 
 class XmlRpcServer:
     def __init__(self, ip: str, port: int):
@@ -13,11 +15,11 @@ class XmlRpcServer:
 
     def start(self):
         self.thread.start()
+        logger.info(f"Started Xml Rpc Server at {self.ip}:{self.port}")
         print("Started Xml Rpc Server!")
         pass
 
     def __serve(self):
         while not stop_event.is_set():
-            print("Awaiting Requests")
             self.server.handle_request()
-        print("Stopped Xml Rpc Server")
+        logger.info("Stopped Xml Rpc Server")

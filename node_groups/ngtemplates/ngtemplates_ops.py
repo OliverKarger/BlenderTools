@@ -122,7 +122,6 @@ class NODE_OT_export_ngtemplate(bpy.types.Operator):
 
 
 def register():
-    print("Registering Node Group Templates Operators")
     bpy.utils.register_class(NODE_OT_add_ngtemplate_instance)
     bpy.utils.register_class(NODE_OT_export_ngtemplate)
     bpy.utils.register_class(NODE_OT_add_ngtemplate_instance_modal)
@@ -130,7 +129,6 @@ def register():
 
 
 def unregister():
-    print("Unregistering Node Group Templates Operators")
     bpy.utils.unregister_class(NODE_OT_add_ngtemplate_instance)
     bpy.utils.unregister_class(NODE_OT_export_ngtemplate)
     bpy.utils.unregister_class(NODE_OT_add_ngtemplate_instance_modal)

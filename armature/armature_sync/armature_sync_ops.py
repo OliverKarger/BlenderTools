@@ -251,7 +251,6 @@ class BlenderTools_OT_set_armature_target(bpy.types.Operator):
 
 
 def register():
-    print("Registering Armature Sync Operators")
     bpy.utils.register_class(BlenderTools_ArmatureSyncEnum)
     bpy.utils.register_class(BlenderTools_ArmatureSyncEnable)
     bpy.utils.register_class(BlenderTools_ArmatureSyncDisable)

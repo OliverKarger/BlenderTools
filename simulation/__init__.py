@@ -1,12 +1,14 @@
-from . import sbrebind_ui
-from . import sbrebind_ops
+from .. import bt_logger
 
+from . import softbody_rebind
+
+logger = bt_logger.get_logger(__name__)
 
 def register():
-    sbrebind_ops.register()
-    sbrebind_ui.register()
+    logger.info("Registering Simulation Tools")
+    softbody_rebind.register()
 
 
 def unregister():
-    sbrebind_ui.unregister()
-    sbrebind_ops.unregister()
+    logger.info("Unregistering Simulation Tools")
+    softbody_rebind.unregister()

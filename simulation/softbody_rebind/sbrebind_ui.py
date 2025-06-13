@@ -22,10 +22,8 @@ class VIEW3D_PT_sbrebind(bpy.types.Panel):
 
 
 def register():
-    print("Registering Softbody Rebind UI")
     bpy.utils.register_class(VIEW3D_PT_sbrebind)
 
 
 def unregister():
-    print("Unregistering Softbody Rebind UI")
     bpy.utils.unregister_class(VIEW3D_PT_sbrebind)

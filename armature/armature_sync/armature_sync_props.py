@@ -1,6 +1,6 @@
 import bpy
 
-from ..blender.constraint import CONSTRAINT_MIX_MODE
+from ...blender.constraint import CONSTRAINT_MIX_MODE
 
 
 class BlenderTools_ArmatureSyncBone(bpy.types.PropertyGroup):
@@ -21,7 +21,6 @@ class BlenderTools_ArmatureSyncProps(bpy.types.PropertyGroup):
 
 
 def register():
-    print("Registering Armature Sync Properties")
     bpy.utils.register_class(BlenderTools_ArmatureSyncBone)
     bpy.utils.register_class(BlenderTools_ArmatureSyncProps)
 
@@ -29,7 +28,6 @@ def register():
 
 
 def unregister():
-    print("Unregistering Armature Sync Properties")
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncProps)
     bpy.utils.unregister_class(BlenderTools_ArmatureSyncBone)
 

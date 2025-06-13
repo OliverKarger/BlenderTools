@@ -42,10 +42,8 @@ class VIEW3D_PT_rpc_remote(bpy.types.Panel):
 
 
 def register():
-    print("Registering RPC Remote UI")
     bpy.utils.register_class(VIEW3D_PT_rpc_remote)
 
 
 def unregister():
-    print("Unregistering RPC Remote UI")
     bpy.utils.unregister_class(VIEW3D_PT_rpc_remote)

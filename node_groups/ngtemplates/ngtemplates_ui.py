@@ -37,12 +37,10 @@ def templates_menu(self, context):
 
 
 def register():
-    print("Registering Node Group Templates UI")
     bpy.utils.register_class(NODE_PT_ngtemplates_panel)
     # py.types.NODE_MT_context_menu.append(templates_menu)
 
 
 def unregister():
-    print("Unregistering Node Group Templates UI")
-    bpy.types.NODE_MT_context_menu.remove(templates_menu)
-    # bpy.utils.unregister_class(NODE_PT_ngtemplates_panel)
+    bpy.utils.unregister_class(NODE_PT_ngtemplates_panel)
+    # bpy.types.NODE_MT_context_menu.remove(templates_menu)
