@@ -5,15 +5,18 @@ import glob
 from cli.utils import blender
 
 import bt_logger
+
 logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "wf"
 HELP = "Blender Python Workflow"
 
+
 def setup(parser: argparse.ArgumentParser):
     parser.add_argument("-p", "--python-file", help="Name of Python File to execute", required=True)
     parser.add_argument("-f", "--file", help="Path to Blender File", required=False)
     parser.add_argument("-fp", "--file-pattern", help="File Pattern for Blender Files", required=False)
+
 
 def handle(args: list[str]):
     if args.file is None and args.file_pattern is None:
@@ -42,7 +45,7 @@ def handle(args: list[str]):
     if args.file_pattern:
         # Expand pattern and sort files for consistency
         matched_files = sorted(glob.glob(args.file_pattern, recursive=True))
-        
+
         if not matched_files:
             logger.error(f"No files found matching pattern '{args.file_pattern}'")
             return

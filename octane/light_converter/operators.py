@@ -1,5 +1,6 @@
 import bpy
 
+
 class BlenderTools_OT_convert_lightsource_to_octane(bpy.types.Operator):
     bl_idname = "blendertools.convert_lightsource_to_octane"
     bl_label = "Convert to Octane Light"
@@ -11,18 +12,18 @@ class BlenderTools_OT_convert_lightsource_to_octane(bpy.types.Operator):
         light_type = light_data.type
 
         # Create a new light datablock
-        new_light_data = bpy.data.lights.new(name=f"OCTANE_{light_data.name}", type='AREA')
+        new_light_data = bpy.data.lights.new(name=f"OCTANE_{light_data.name}", type="AREA")
 
         # Set Octane-specific properties if available
         if hasattr(new_light_data, "octane"):
-            if light_type == 'POINT':
-                new_light_data.octane.light_type = '0'  # Point
-            elif light_type == 'SUN':
-                new_light_data.octane.light_type = '2'  # Directional
-            elif light_type == 'AREA':
-                new_light_data.octane.light_type = '1'  # Area
-            elif light_type == 'SPOT':
-                new_light_data.octane.light_type = '0'  # Treat as point for now
+            if light_type == "POINT":
+                new_light_data.octane.light_type = "0"  # Point
+            elif light_type == "SUN":
+                new_light_data.octane.light_type = "2"  # Directional
+            elif light_type == "AREA":
+                new_light_data.octane.light_type = "1"  # Area
+            elif light_type == "SPOT":
+                new_light_data.octane.light_type = "0"  # Treat as point for now
             else:
                 self.report({"WARNING"}, f"Light type {light_type} not specifically handled.")
 
@@ -41,8 +42,10 @@ class BlenderTools_OT_convert_lightsource_to_octane(bpy.types.Operator):
         self.report({"INFO"}, f"Converted {obj.name} to Octane Light")
         return {"FINISHED"}
 
+
 def register():
     bpy.utils.register_class(BlenderTools_OT_convert_lightsource_to_octane)
+
 
 def unregister():
     bpy.utils.unregister_class(BlenderTools_OT_convert_lightsource_to_octane)

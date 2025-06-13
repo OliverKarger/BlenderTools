@@ -16,10 +16,8 @@ def view3d_context_menu(self, context):
 
 
 class BONE_UL_bone_list(bpy.types.UIList):
-    def draw_item(
-        self, context, layout, data, item, icon, active_data, active_propname, index
-    ):
-        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
             row = layout.row()
 
             if item.sync_enabled:
@@ -27,11 +25,11 @@ class BONE_UL_bone_list(bpy.types.UIList):
 
             row.prop(item, "should_be_synced", text="")
 
-            row.label(text=item.name, icon='BONE_DATA')
+            row.label(text=item.name, icon="BONE_DATA")
 
-        elif self.layout_type == 'GRID':
-            layout.alignment = 'CENTER'
-            layout.label(text="", icon='BONE_DATA')
+        elif self.layout_type == "GRID":
+            layout.alignment = "CENTER"
+            layout.label(text="", icon="BONE_DATA")
 
 
 class VIEW3D_PT_armature_sync(bpy.types.Panel):
@@ -62,16 +60,16 @@ class VIEW3D_PT_armature_sync(bpy.types.Panel):
         layout.separator()
 
         row = layout.row(align=True)
-        row.operator("blendertools.armature_sync_enum", icon='ARMATURE_DATA')
-        row.operator("blendertools.armature_sync_check", icon='INFO')
+        row.operator("blendertools.armature_sync_enum", icon="ARMATURE_DATA")
+        row.operator("blendertools.armature_sync_check", icon="INFO")
 
         layout.template_list("BONE_UL_bone_list", "", props, "bones", props, "active_bone_index")
 
         layout.separator()
 
         row = layout.row(align=True)
-        row.operator("blendertools.armature_sync_enable", icon='LINKED')
-        row.operator("blendertools.armature_sync_disable", icon='UNLINKED')
+        row.operator("blendertools.armature_sync_enable", icon="LINKED")
+        row.operator("blendertools.armature_sync_disable", icon="UNLINKED")
 
 
 def register():

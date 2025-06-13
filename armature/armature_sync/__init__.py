@@ -8,6 +8,7 @@ from . import properties
 
 logger = bt_logger.get_logger(__name__)
 
+
 def register():
     logger.info("Registering Armature Sync Tools")
     properties.register()

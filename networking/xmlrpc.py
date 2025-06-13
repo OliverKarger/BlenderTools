@@ -2,11 +2,13 @@ import threading
 import xmlrpc.server as xmlrpcserver
 
 from .. import bt_logger
+
 logger = bt_logger.get_logger(__name__)
 
 stop_event = threading.Event()
 
 server_instance = None
+
 
 class XmlRpcServer:
     def __init__(self, ip: str, port: int):

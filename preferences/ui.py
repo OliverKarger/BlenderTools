@@ -8,15 +8,10 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
     bl_idname = "blendertools"
 
     auto_import_enabled: bpy.props.BoolProperty(
-        name="Enable Auto Import",
-        description="Automatically import templates at addon startup",
-        default=True
+        name="Enable Auto Import", description="Automatically import templates at addon startup", default=True
     )
 
-    additional_import_paths: bpy.props.CollectionProperty(
-        type=properties.TemplatePathItem,
-        name="Additional Paths"
-    )
+    additional_import_paths: bpy.props.CollectionProperty(type=properties.TemplatePathItem, name="Additional Paths")
 
     enable_armature: bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
     enable_node_groups: bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
@@ -43,7 +38,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
         if self.enable_node_groups:
             box = layout.box()
             box.label(text="Node Group Tools Settings", icon="NODE")
-            box.prop(self, "auto_import_enabled")    
+            box.prop(self, "auto_import_enabled")
             path_box = box.box()
             path_box.label(text="Additional Import Paths", icon="FILE_FOLDER")
             layout.operator("blendertools.add_template_path", icon="ADD")

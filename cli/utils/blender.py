@@ -6,23 +6,21 @@ import tempfile
 from cli import constants
 
 import bt_logger
+
 logger = bt_logger.get_logger(__name__)
+
 
 def invoke(opts: list[str]) -> bool:
     if not os.path.exists(constants.BLENDER_PATH):
         logger.fatal("Blender not found!")
         return False
-    
+
     process_args = [constants.BLENDER_PATH] + opts
 
     logger.debug(f"Invoking Blender with Args: {process_args}")
 
-    process = subprocess.Popen(
-        process_args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        bufsize=1)
-    
+    process = subprocess.Popen(process_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+
     with io.TextIOWrapper(process.stdout, encoding="utf-8", errors="replace") as stdout:
         for line in stdout:
             formatted_line = f"BLENDER | {line.rstrip()}"
@@ -33,6 +31,7 @@ def invoke(opts: list[str]) -> bool:
         return False
 
     return ("", True)
+
 
 def render(file: str, verbose: bool, output: str, output_format: str = "TIFF") -> bool:
     if not os.path.exists(file):
@@ -48,8 +47,8 @@ def render(file: str, verbose: bool, output: str, output_format: str = "TIFF") -
 
     with open(script_path, "w") as f:
         f.write("import bpy\n")
-        f.write(f"bpy.context.scene.render.image_settings.file_format=\"{output_format}\"\n")
-        f.write(f"bpy.context.scene.render.filepath = r\"{output}\"\n")
+        f.write(f'bpy.context.scene.render.image_settings.file_format="{output_format}"\n')
+        f.write(f'bpy.context.scene.render.filepath = r"{output}"\n')
         f.write("bpy.ops.render.render(write_still=True)\n")
 
     args = ["-b", file, "-y", "--python", script_path]

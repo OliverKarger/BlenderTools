@@ -4,6 +4,7 @@ from . import softbody_rebind
 
 logger = bt_logger.get_logger(__name__)
 
+
 def register():
     logger.info("Registering Simulation Tools")
     softbody_rebind.register()

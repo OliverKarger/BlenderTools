@@ -16,7 +16,7 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
             self.report({"ERROR"}, "Please set Source and Target Armature!")
             return {"CANCELLED"}
 
-        if source.type != 'ARMATURE' or target.type != 'ARMATURE':
+        if source.type != "ARMATURE" or target.type != "ARMATURE":
             self.report({"ERROR"}, "Both objects must be of type 'ARMATURE'")
             return {"CANCELLED"}
 
@@ -63,9 +63,9 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
         # --- Reporting ---
         if messages:
             for msg in messages:
-                self.report({'INFO'}, msg)
+                self.report({"INFO"}, msg)
         else:
-            self.report({'INFO'}, "Armatures appear compatible.")
+            self.report({"INFO"}, "Armatures appear compatible.")
 
         return {"FINISHED"}
 
@@ -83,7 +83,7 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
             self.report({"ERROR"}, "Please set Source and Target Armature!")
             return {"CANCELLED"}
 
-        if source.type != 'ARMATURE' or target.type != 'ARMATURE':
+        if source.type != "ARMATURE" or target.type != "ARMATURE":
             self.report({"ERROR"}, "Both objects must be of type 'ARMATURE'")
             return {"CANCELLED"}
 
@@ -122,7 +122,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
         if utils.has_significant_scale_difference(source, target):
             return context.window_manager.invoke_props_dialog(self)
@@ -156,14 +156,14 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
             source_bone = bone_data.name
             target_bone = bone_data.linked_name
 
-            if not source or not target or source.type != 'ARMATURE' or target.type != 'ARMATURE':
+            if not source or not target or source.type != "ARMATURE" or target.type != "ARMATURE":
                 continue
             if source_bone not in source.pose.bones or target_bone not in target.pose.bones:
                 continue
 
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
             bpy.context.view_layer.objects.active = target
-            bpy.ops.object.mode_set(mode='POSE')
+            bpy.ops.object.mode_set(mode="POSE")
 
             pbone = target.pose.bones[target_bone]
 
@@ -171,7 +171,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
                 if con.name == "ArmatureSync":
                     pbone.constraints.remove(con)
 
-            con: bpy.types.CopyTransformsConstraint = pbone.constraints.new(type='COPY_TRANSFORMS')
+            con: bpy.types.CopyTransformsConstraint = pbone.constraints.new(type="COPY_TRANSFORMS")
             con.name = "ArmatureSync"
             con.target = source
             con.subtarget = source_bone
@@ -180,7 +180,7 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
             bone_data.sync_enabled = True
             applied_count += 1
 
-        self.report({'INFO'}, f"ync constraints applied to {applied_count} bones (target follows source).")
+        self.report({"INFO"}, f"ync constraints applied to {applied_count} bones (target follows source).")
         return {"FINISHED"}
 
 
@@ -197,13 +197,13 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
             self.report({"ERROR"}, "Please set Source and Target Armature!")
             return {"CANCELLED"}
 
-        if target.type != 'ARMATURE':
+        if target.type != "ARMATURE":
             self.report({"ERROR"}, "Target must be an Armature")
             return {"CANCELLED"}
 
-        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
         bpy.context.view_layer.objects.active = target
-        bpy.ops.object.mode_set(mode='POSE')
+        bpy.ops.object.mode_set(mode="POSE")
 
         removed_count = 0
 
@@ -215,18 +215,15 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
             pbone = target.pose.bones[target_bone_name]
 
-            to_remove = [
-                c
-                for c in pbone.constraints
-                if c.name == "ArmatureSync"]
-      
+            to_remove = [c for c in pbone.constraints if c.name == "ArmatureSync"]
+
             for c in to_remove:
                 pbone.constraints.remove(c)
                 removed_count += 1
 
             bone_data.sync_enabled = False
 
-        self.report({'INFO'}, f"Removed {removed_count} sync constraints from target rig.")
+        self.report({"INFO"}, f"Removed {removed_count} sync constraints from target rig.")
         return {"FINISHED"}
 
 

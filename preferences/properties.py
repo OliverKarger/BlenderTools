@@ -3,9 +3,7 @@ import bpy
 
 class TemplatePathItem(bpy.types.PropertyGroup):
     path: bpy.props.StringProperty(
-        name="Path",
-        description="Additional path to scan for node group templates",
-        subtype='DIR_PATH'
+        name="Path", description="Additional path to scan for node group templates", subtype="DIR_PATH"
     )
 
 

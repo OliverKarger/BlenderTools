@@ -3,15 +3,20 @@ import argparse
 from cli.utils import blender
 
 import bt_logger
+
 logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "single"
 HELP = "Render a single blend file"
 
+
 def setup(parser: argparse.ArgumentParser):
     parser.add_argument("-i", "--input", help="Input File", required=True)
-    parser.add_argument("-o", "--output", help="Output File (optional, defaults to Blender's internal path)", required=True)
+    parser.add_argument(
+        "-o", "--output", help="Output File (optional, defaults to Blender's internal path)", required=True
+    )
     parser.add_argument("-off", "--output-file-format", help="Output File Format", default="TIFF", required=False)
+
 
 def handle(args):
     input_file = args.input
@@ -37,4 +42,3 @@ def handle(args):
         return
 
     blender.render(input_file, verbose=args.verbose, output=output_path, output_format=output_format)
-

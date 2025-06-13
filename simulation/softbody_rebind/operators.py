@@ -12,35 +12,35 @@ class BlenderTools_SBRebindRecursive(bpy.types.Operator):
         if addon_prefs and hasattr(addon_prefs, "preferences"):
             max_depth = getattr(addon_prefs.preferences, "sbrebind_max_depth", 0)
         else:
-            self.report({'WARNING'}, "Unable to find max_depth setting in addon preferences.")
-            return {'CANCELLED'}
+            self.report({"WARNING"}, "Unable to find max_depth setting in addon preferences.")
+            return {"CANCELLED"}
 
         if not active_obj:
-            self.report({'WARNING'}, "No active object selected.")
-            return {'CANCELLED'}
+            self.report({"WARNING"}, "No active object selected.")
+            return {"CANCELLED"}
 
         def rebind_modifier(mod, obj):
             original_active = bpy.context.view_layer.objects.active
-            current_mode = bpy.context.object.mode if bpy.context.object else 'OBJECT'
+            current_mode = bpy.context.object.mode if bpy.context.object else "OBJECT"
 
             try:
-                bpy.ops.object.mode_set(mode='OBJECT')
-                bpy.ops.object.select_all(action='DESELECT')
+                bpy.ops.object.mode_set(mode="OBJECT")
+                bpy.ops.object.select_all(action="DESELECT")
                 obj.select_set(True)
                 bpy.context.view_layer.objects.active = obj
 
-                if mod.type == 'MESH_DEFORM':
+                if mod.type == "MESH_DEFORM":
                     bpy.ops.object.modifier_bind(modifier=mod.name)
-                    self.report({'INFO'}, f"Rebound Mesh Deform on {obj.name}")
-                elif mod.type == 'SURFACE_DEFORM':
+                    self.report({"INFO"}, f"Rebound Mesh Deform on {obj.name}")
+                elif mod.type == "SURFACE_DEFORM":
                     bpy.ops.object.surfacedeform_bind(modifier=mod.name)
-                    self.report({'INFO'}, f"Rebound Surface Deform on {obj.name}")
+                    self.report({"INFO"}, f"Rebound Surface Deform on {obj.name}")
 
             except Exception as e:
-                self.report({'WARNING'}, f"Failed to bind {mod.type} on {obj.name}: {e}")
+                self.report({"WARNING"}, f"Failed to bind {mod.type} on {obj.name}: {e}")
 
             finally:
-                bpy.ops.object.select_all(action='DESELECT')
+                bpy.ops.object.select_all(action="DESELECT")
                 if original_active:
                     original_active.select_set(True)
                     bpy.context.view_layer.objects.active = original_active
@@ -49,7 +49,7 @@ class BlenderTools_SBRebindRecursive(bpy.types.Operator):
 
         def process_object(obj):
             for mod in obj.modifiers:
-                if mod.type in {'MESH_DEFORM', 'SURFACE_DEFORM'}:
+                if mod.type in {"MESH_DEFORM", "SURFACE_DEFORM"}:
                     rebind_modifier(mod, obj)
 
         def recurse_children(parent, depth):
@@ -61,7 +61,7 @@ class BlenderTools_SBRebindRecursive(bpy.types.Operator):
 
         recurse_children(active_obj, depth=1)
 
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 def register():

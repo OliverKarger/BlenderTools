@@ -4,9 +4,11 @@ import pathlib
 import sys
 
 from . import bt_logger
+
 logger = bt_logger.get_logger(__name__)
 
 BASE_COMMANDS_DIR = pathlib.Path(__file__).parent / "commands"
+
 
 def import_command_module(path: pathlib.Path):
     """Import a module from a given file path."""
@@ -38,9 +40,7 @@ def parse():
 
     # Root CLI parser
     parser = argparse.ArgumentParser(
-        prog="BlenderTools CLI",
-        description="Command Line Interface Tools",
-        parents=[global_parser]
+        prog="BlenderTools CLI", description="Command Line Interface Tools", parents=[global_parser]
     )
 
     main_subparsers = parser.add_subparsers(dest="group", required=True)
@@ -69,7 +69,9 @@ def parse():
 
         else:
             # Handle multi-command group (e.g., render/single.py, render/batch.py)
-            group_parser = main_subparsers.add_parser(group_name, help=f"{group_name} commands", parents=[global_parser])
+            group_parser = main_subparsers.add_parser(
+                group_name, help=f"{group_name} commands", parents=[global_parser]
+            )
             group_subparsers = group_parser.add_subparsers(dest="command", required=True)
 
             for file in group_dir.glob("*.py"):

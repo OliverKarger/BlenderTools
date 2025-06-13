@@ -4,17 +4,24 @@ import glob
 from cli.utils import blender
 
 import bt_logger
+
 logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "batch"
 HELP = "Batch Renders Files"
 
+
 def setup(parser: argparse.ArgumentParser):
     parser.add_argument("-i", "--input", help="Input Path", default=os.getcwd(), required=True)
-    parser.add_argument("-o", "--output", help="Output Path", default=os.path.join(os.getcwd(), "renders"), required=True)
+    parser.add_argument(
+        "-o", "--output", help="Output Path", default=os.path.join(os.getcwd(), "renders"), required=True
+    )
     parser.add_argument("-off", "--output-file-format", help="Output File Format", default="TIFF", required=False)
     parser.add_argument("-if", "--input-format", help="Input File Format", default="*.blend", required=False)
-    parser.add_argument("-of", "--output-format", help="Output File Format", default="{{filename}}.{{format}}", required=False)
+    parser.add_argument(
+        "-of", "--output-format", help="Output File Format", default="{{filename}}.{{format}}", required=False
+    )
+
 
 def handle(args):
     input_dir = args.input
@@ -44,7 +51,9 @@ def handle(args):
         # If output template was explicitly provided, render to output path
         if output_template:
             filename_base = os.path.splitext(os.path.basename(blend_file))[0]
-            output_filename = output_template.replace("{{filename}}", filename_base).replace("{{format}}", output_file_format.lower())
+            output_filename = output_template.replace("{{filename}}", filename_base).replace(
+                "{{format}}", output_file_format.lower()
+            )
             output_path = os.path.join(output_dir, output_filename)
         else:
             output_path = None  # Fall back to Blender's internal settings

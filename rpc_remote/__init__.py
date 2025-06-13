@@ -6,6 +6,7 @@ from . import operators
 
 logger = bt_logger.get_logger(__name__)
 
+
 def register():
     logger.info("Registering RPC Remote Tools")
     properties.register()

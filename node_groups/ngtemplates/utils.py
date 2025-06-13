@@ -7,42 +7,36 @@ def serialize_node_group(group):
     # Tag the node group as a template
     group["is_template"] = True
 
-    inputs = [
-        item.name for item in group.interface.items_tree
-        if item.item_type == 'SOCKET' and item.in_out == 'INPUT'
-    ]
+    inputs = [item.name for item in group.interface.items_tree if item.item_type == "SOCKET" and item.in_out == "INPUT"]
     outputs = [
-        item.name for item in group.interface.items_tree
-        if item.item_type == 'SOCKET' and item.in_out == 'OUTPUT'
+        item.name for item in group.interface.items_tree if item.item_type == "SOCKET" and item.in_out == "OUTPUT"
     ]
 
     node_names = {node.name for node in group.nodes}
 
-    data = {
-        'name': group.name,
-        'inputs': inputs,
-        'outputs': outputs,
-        'nodes': [],
-        'links': []
-    }
+    data = {"name": group.name, "inputs": inputs, "outputs": outputs, "nodes": [], "links": []}
 
     for node in group.nodes:
-        data['nodes'].append({
-            'name': node.name,
-            'type': node.bl_idname,
-            'location': list(node.location),
-            'inputs': [sock.name for sock in node.inputs],
-            'outputs': [sock.name for sock in node.outputs]
-        })
+        data["nodes"].append(
+            {
+                "name": node.name,
+                "type": node.bl_idname,
+                "location": list(node.location),
+                "inputs": [sock.name for sock in node.inputs],
+                "outputs": [sock.name for sock in node.outputs],
+            }
+        )
 
     for link in group.links:
         if link.from_node.name in node_names and link.to_node.name in node_names:
-            data['links'].append({
-                'from_node': link.from_node.name,
-                'from_socket': link.from_socket.name,
-                'to_node': link.to_node.name,
-                'to_socket': link.to_socket.name
-            })
+            data["links"].append(
+                {
+                    "from_node": link.from_node.name,
+                    "from_socket": link.from_socket.name,
+                    "to_node": link.to_node.name,
+                    "to_socket": link.to_socket.name,
+                }
+            )
 
     return data
 
@@ -51,40 +45,40 @@ def get_template_node_groups(self, context):
     return [
         (group.name, group.name, "")
         for group in bpy.data.node_groups
-        if group.bl_idname == 'ShaderNodeTree' and group.get("is_template", False)
+        if group.bl_idname == "ShaderNodeTree" and group.get("is_template", False)
     ] or [("NONE", "No templates found", "")]
 
 
 def import_template_from_file(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         data = json.load(f)
 
-    group_name = bpy.path.clean_name(data.get('name', 'ImportedTemplate'))
+    group_name = bpy.path.clean_name(data.get("name", "ImportedTemplate"))
     if group_name in bpy.data.node_groups:
         group_name = f"{group_name}_copy"
 
-    group = bpy.data.node_groups.new(name=group_name, type='ShaderNodeTree')
+    group = bpy.data.node_groups.new(name=group_name, type="ShaderNodeTree")
     group["is_template"] = True
 
-    for name in data['inputs']:
-        group.interface.new_socket(name=name, in_out='INPUT', socket_type='NodeSocketFloat')
-    for name in data['outputs']:
-        group.interface.new_socket(name=name, in_out='OUTPUT', socket_type='NodeSocketShader')
+    for name in data["inputs"]:
+        group.interface.new_socket(name=name, in_out="INPUT", socket_type="NodeSocketFloat")
+    for name in data["outputs"]:
+        group.interface.new_socket(name=name, in_out="OUTPUT", socket_type="NodeSocketShader")
 
     name_to_node = {}
-    for node_data in data['nodes']:
-        node = group.nodes.new(type=node_data['type'])
-        node.name = node_data['name']
-        node.location = node_data['location']
+    for node_data in data["nodes"]:
+        node = group.nodes.new(type=node_data["type"])
+        node.name = node_data["name"]
+        node.location = node_data["location"]
         name_to_node[node.name] = node
 
-    for link in data['links']:
-        from_node = name_to_node.get(link['from_node'])
-        to_node = name_to_node.get(link['to_node'])
+    for link in data["links"]:
+        from_node = name_to_node.get(link["from_node"])
+        to_node = name_to_node.get(link["to_node"])
         if from_node and to_node:
             try:
-                from_socket = from_node.outputs[link['from_socket']]
-                to_socket = to_node.inputs[link['to_socket']]
+                from_socket = from_node.outputs[link["from_socket"]]
+                to_socket = to_node.inputs[link["to_socket"]]
                 group.links.new(from_socket, to_socket)
             except Exception as e:
                 print(f"Skipping broken link: {e}")

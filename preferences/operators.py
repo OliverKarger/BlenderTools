@@ -4,6 +4,7 @@ import os
 
 from ..cli import utils as cli_utils
 
+
 class BlenderTools_OT_AddTemplatePath(bpy.types.Operator):
     bl_idname = "blendertools.add_template_path"
     bl_label = "Add Template Path"
@@ -11,7 +12,7 @@ class BlenderTools_OT_AddTemplatePath(bpy.types.Operator):
     def execute(self, context):
         prefs = context.preferences.addons["blendertools"].preferences
         prefs.additional_import_paths.add()
-        return {'FINISHED'}
+        return {"FINISHED"}
 
 
 class BlenderTools_OT_RemoveTemplatePath(bpy.types.Operator):
@@ -24,8 +25,9 @@ class BlenderTools_OT_RemoveTemplatePath(bpy.types.Operator):
         prefs = context.preferences.addons["blendertools"].preferences
         if 0 <= self.index < len(prefs.additional_import_paths):
             prefs.additional_import_paths.remove(self.index)
-        return {'FINISHED'}
-    
+        return {"FINISHED"}
+
+
 class BlenderTools_OT_InstallWrapperScript(bpy.types.Operator):
     bl_idname = "blendertools.install_wrapper_script"
     bl_label = "Install Wrapper Script"
@@ -33,7 +35,8 @@ class BlenderTools_OT_InstallWrapperScript(bpy.types.Operator):
     def execute(self, context):
         cli_utils.install.install_wrapper()
         return {"FINISHED"}
-    
+
+
 class BlenderTools_OT_UninstallWrapperScript(bpy.types.Operator):
     bl_idname = "blendertools.uninstall_wrapper_script"
     bl_label = "Uninstall Wrapper Script"
@@ -41,6 +44,7 @@ class BlenderTools_OT_UninstallWrapperScript(bpy.types.Operator):
     def execute(self, context):
         cli_utils.install.uninstall_wrapper()
         return {"FINISHED"}
+
 
 def register():
     bpy.utils.register_class(BlenderTools_OT_AddTemplatePath)
