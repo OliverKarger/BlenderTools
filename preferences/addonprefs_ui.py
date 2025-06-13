@@ -23,6 +23,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
     enable_workflow: bpy.props.BoolProperty(name="Enable Workflows", default=True)
     enable_rpc_remote: bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
     enable_softbody: bpy.props.BoolProperty(name="Enable Softbody Tools", default=True)
+    enable_octane: bpy.props.BoolProperty(name="Enable Octane Tools", default=True)
 
     sbrebind_max_depth: bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
 
@@ -37,6 +38,7 @@ class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
         enable_box.prop(self, "enable_workflow")
         enable_box.prop(self, "enable_rpc_remote")
         enable_box.prop(self, "enable_softbody")
+        enable_box.prop(self, "enable_octane")
 
         if self.enable_node_groups:
             box = layout.box()
