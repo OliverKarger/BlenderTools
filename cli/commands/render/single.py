@@ -2,6 +2,10 @@ import os
 import argparse
 from cli.utils import blender
 
+import bt_logger
+
+logger = bt_logger.get_logger(__name__)
+
 COMMAND_NAME = "single"
 HELP = "Render a single blend file"
 
@@ -15,7 +19,7 @@ def handle(args):
     output_format = args.output_file_format.upper()
 
     if not os.path.exists(input_file):
-        print(f"[ERROR] Input file '{input_file}' does not exist.")
+        logger.error(f"Input file '{input_file}' does not exist.")
         return
 
     output_path = None
@@ -26,17 +30,13 @@ def handle(args):
 
     if args.verbose:
         if output_path:
-            print(f"[INFO] Rendering '{input_file}' to '{output_path}' as {output_format}")
+            logger.info(f"Rendering '{input_file}' to '{output_path}' as {output_format}")
         else:
-            print(f"[INFO] Rendering '{input_file}' using Blender's internal output path")
+            logger.info(f"Rendering '{input_file}' using Blender's internal output path")
 
     if args.dry_run:
-        print("[DRY RUN] Skipping actual render")
+        logger.info("Skipping actual render")
         return
 
-    result = blender.render(input_file, verbose=args.verbose, output=output_path)
+    blender.render(input_file, verbose=args.verbose, output=output_path)
 
-    if not result[1]:
-        print(f"[ERROR] Render failed: {result[0]}")
-    elif args.verbose:
-        print("[SUCCESS] Render completed.")

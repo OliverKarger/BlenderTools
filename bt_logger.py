@@ -22,7 +22,7 @@ def get_logger(name: str) -> logging.Logger:
     logger.propagate = False  # Prevent log duplication via parent
 
     if not logger.handlers:
-        formatter = ColorFormatter("%(levelname)s:%(name)s: %(message)s")
+        formatter = ColorFormatter("[%(levelname)s] %(name)s: %(message)s")
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(formatter)
         logger.addHandler(handler)

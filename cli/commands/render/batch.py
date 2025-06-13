@@ -3,6 +3,10 @@ import os
 import glob
 from cli.utils import blender
 
+import bt_logger
+
+logger = bt_logger.get_logger(__name__)
+
 COMMAND_NAME = "batch"
 HELP = "Batch Renders Files"
 
@@ -21,7 +25,7 @@ def handle(args):
     output_file_format = args.output_file_format.upper()
 
     if not os.path.exists(input_dir):
-        print(f"[ERROR] Input path '{input_dir}' does not exist.")
+        logger.error(f"Input path '{input_dir}' does not exist.")
         return
 
     os.makedirs(output_dir, exist_ok=True)
@@ -31,7 +35,7 @@ def handle(args):
     blend_files = sorted(glob.glob(search_pattern, recursive=True))
 
     if not blend_files:
-        print(f"[ERROR] No files found matching pattern '{input_pattern}' in '{input_dir}'")
+        logger.error(f"No files found matching pattern '{input_pattern}' in '{input_dir}'")
         return
 
     for blend_file in blend_files:
@@ -48,17 +52,12 @@ def handle(args):
 
         if args.verbose:
             if output_path:
-                print(f"[INFO] Rendering '{blend_file}' → '{output_path}' as {output_file_format}")
+                logger.info(f"Rendering '{blend_file}' → '{output_path}' as {output_file_format}")
             else:
-                print(f"[INFO] Rendering '{blend_file}' using Blender's internal output path")
+                logger.info(f"Rendering '{blend_file}' using Blender's internal output path")
 
         if args.dry_run:
-            print(f"[DRY RUN] Skipping actual render for '{blend_file}'")
+            logger.info(f"Skipping actual render for '{blend_file}'")
             continue
 
-        result = blender.render(blend_file, verbose=args.verbose, output=output_path)
-
-        if not result[1]:
-            print(f"[ERROR] Failed to render '{blend_file}': {result[0]}")
-        elif args.verbose:
-            print(f"[SUCCESS] Rendered '{blend_file}'")
+        blender.render(blend_file, verbose=args.verbose, output=output_path)

@@ -3,6 +3,9 @@ import os
 import glob
 
 from cli.utils import blender
+import bt_logger
+
+logger = bt_logger.get_logger(__name__)
 
 COMMAND_NAME = "wf"
 HELP = "Blender Python Workflow"
@@ -14,22 +17,22 @@ def setup(parser: argparse.ArgumentParser):
 
 def handle(args: list[str]):
     if args.file is None and args.file_pattern is None:
-        print("[ERROR] Either specify --file or --file-pattern")
+        logger.error("Either specify --file or --file-pattern")
         return
 
     if args.file and not os.path.exists(args.file):
-        print(f"[ERROR] File '{args.file}' does not exist!")
+        logger.error(f"File '{args.file}' does not exist!")
         return
 
     if not os.path.exists(args.python_file):
-        print(f"[ERROR] Python script '{args.python_file}' does not exist!")
+        logger.error(f"Python script '{args.python_file}' does not exist!")
         return
 
     if args.file:
         # Single file render
 
         if args.verbose:
-            print(f"[INFO] Processing: {args.file}")
+            logger.info(f"Processing: {args.file}")
 
         if not args.dry_run:
             command = ["-b", args.file, "-y", "--python", args.python_file]
@@ -41,7 +44,7 @@ def handle(args: list[str]):
         matched_files = sorted(glob.glob(args.file_pattern, recursive=True))
         
         if not matched_files:
-            print(f"[ERROR] No files found matching pattern '{args.file_pattern}'")
+            logger.error(f"No files found matching pattern '{args.file_pattern}'")
             return
 
         for filepath in matched_files:
@@ -49,7 +52,7 @@ def handle(args: list[str]):
                 continue
 
             if args.verbose:
-                print(f"[INFO] Processing: {filepath}")
+                logger.info(f"Processing: {filepath}")
 
             if not args.dry_run:
                 command = ["-b", filepath, "-y", "--python", args.python_file]

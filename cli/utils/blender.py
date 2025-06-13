@@ -5,14 +5,18 @@ import tempfile
 
 from cli import constants
 
-def invoke(opts: list[str], verbose: bool) -> tuple[str, bool]:
+import bt_logger
+
+logger = bt_logger.get_logger(__name__)
+
+def invoke(opts: list[str]) -> bool:
     if not os.path.exists(constants.BLENDER_PATH):
-        return ("Blender not found!", False)
+        logger.fatal("Blender not found!")
+        return False
     
     process_args = [constants.BLENDER_PATH] + opts
 
-    if verbose:
-        print(f"[DEBUG] Invoking Blender with Args: {process_args}")
+    logger.debug(f"Invoking Blender with Args: {process_args}")
 
     process = subprocess.Popen(
         process_args,
@@ -23,17 +27,19 @@ def invoke(opts: list[str], verbose: bool) -> tuple[str, bool]:
     with io.TextIOWrapper(process.stdout, encoding="utf-8", errors="replace") as stdout:
         for line in stdout:
             formatted_line = f"BLENDER | {line}"
-            print(formatted_line, end='', flush=True)
+            logger.debug(formatted_line)
 
     if process.wait != 0:
-        return (process.returncode, False)
+        logger.fatal(f"Blender Error ({process.returncode})")
+        return False
 
     return ("", True)
 
-def render(file: str, verbose: bool, output: str | None) -> tuple[str, bool]:
+def render(file: str, verbose: bool, output: str | None) -> bool:
     if not os.path.exists(file):
-        return (f"File {file} does not exist", False)
-    
+        logger.error(f"File {file} does not exist!")
+        return False
+
     # Create Temporary Blender Script
     temp_dir = tempfile.gettempdir()
     script_path = os.path.join(temp_dir, "blender_render.py")
