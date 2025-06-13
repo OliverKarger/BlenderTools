@@ -13,7 +13,7 @@ Run the CLI Command:
 "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\wrapper.cmd" ^
     wf ^
     -p "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples\update_light.py" ^
-    -f "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples\example.blend"
+    -f "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples\example1.blend"
 ```
 
 ## Render Blender File
@@ -28,7 +28,25 @@ Run the CLI Command:
 ```
 "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\wrapper.cmd" ^
     render single ^
-    -i "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples\example.blend" ^
+    -i "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples\example1.blend" ^
     -o "C:\tmp\test.tiff" ^
     -off "TIFF"
+```
+
+## Render multible Blender Files
+
+### Objective
+Render multible Blender Files using BlenderTools' Batch Render System
+
+### Walkthrough
+
+Run the CLI Command
+
+```
+"%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\wrapper.cmd" ^
+    render batch ^
+    -i "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples"
+    -if "*.blend"
+    -o "C:\temp"
+    -of "{{filename}}.tiff"
 ```
