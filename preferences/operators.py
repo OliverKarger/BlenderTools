@@ -1,6 +1,4 @@
 import bpy
-import sys
-import os
 
 from ..cli import utils as cli_utils
 

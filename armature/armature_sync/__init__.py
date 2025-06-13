@@ -1,5 +1,3 @@
-import logging
-
 from .. import bt_logger
 
 from . import operators

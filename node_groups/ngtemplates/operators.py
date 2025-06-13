@@ -24,7 +24,7 @@ class NODE_OT_import_node_group_template(bpy.types.Operator):
         try:
             utils.import_template_from_file(self.filepath)
 
-            self.report({"INFO"}, f"Node group imported successfully")
+            self.report({"INFO"}, "Node group imported successfully")
             return {"FINISHED"}
 
         except Exception as e:
