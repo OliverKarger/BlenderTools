@@ -1,6 +1,8 @@
 import logging
 import sys
 
+global_log_level = logging.DEBUG
+
 class ColorFormatter(logging.Formatter):
     COLORS = {
         'DEBUG': '\033[94m',    # Blue
@@ -18,7 +20,7 @@ class ColorFormatter(logging.Formatter):
 
 def get_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(global_log_level)
     logger.propagate = False  # Prevent log duplication via parent
 
     if not logger.handlers:
