@@ -3,7 +3,7 @@ from . import node_groups
 from . import preferences
 from . import rpc_remote
 from . import simulation
-from . import octane
+# from . import octane
 
 bl_info = {
     "name": "Blender Tools",
@@ -21,7 +21,7 @@ def register():
     node_groups.register()
     rpc_remote.register()
     simulation.register()
-    octane.register()
+    # octane.register()
 
 
 def unregister():
@@ -30,7 +30,7 @@ def unregister():
     node_groups.unregister()
     preferences.unregister()
     rpc_remote.unregister()
-    octane.unregister()
+    # octane.unregister()
 
 
 if __name__ == "__main__":
