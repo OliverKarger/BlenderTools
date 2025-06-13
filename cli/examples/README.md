@@ -45,8 +45,9 @@ Run the CLI Command
 ```
 "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\wrapper.cmd" ^
     render batch ^
-    -i "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples"
-    -if "*.blend"
-    -o "C:\temp"
-    -of "{{filename}}.tiff"
+    -i "%APPDATA%\Blender Foundation\Blender\4.3\scripts\addons\blendertools\cli\examples" ^
+    -if "*.blend" ^
+    -o "C:\temp" ^
+    -of "{{filename}}.tiff" ^
+    -off "TIFF"
 ```

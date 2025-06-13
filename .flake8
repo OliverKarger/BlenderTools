@@ -1,5 +1,6 @@
 [flake8]
 max-line-length = 120
+exclude = .venv
 docstring-convention = google
-select = D
-ignore = D210 D100 D101 D102 D103 D104 D107 
+select = E,F,W,D,B,B950
+ignore = D210 D100 D101 D102 D103 D104 D107
