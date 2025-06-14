@@ -15,23 +15,47 @@ bundle_addon:
       import ast
       with open('$ADDON_INIT') as f:
           tree = ast.parse(f.read())
-      bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
-      ver = next((kw.value for kw in bl_info.keys if kw.s == 'version'), None)
-      if ver:
-          print('.'.join(str(n.value) for n in ver.elts))
-      ")
-      echo "VERSION=$VERSION" >> release.env
+
+        bl_info = None
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'bl_info':
+                bl_info = node.value
+                break
+
+        if not isinstance(bl_info, ast.Dict):
+            raise ValueError('bl_info not found or malformed')
+
+              bl_dict = dict(zip([k.s for k in bl_info.keys], bl_info.values))
+              version = bl_dict.get('version')
+              if isinstance(version, ast.Tuple):
+                  print('.'.join(str(n.n) for n in version.elts))
+              ")
+              echo "VERSION=$VERSION" >> release.env
+
     - |
       PRERELEASE=$(python3 -c "
       import ast
       with open('$ADDON_INIT') as f:
           tree = ast.parse(f.read())
-      bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
-      warn = next((kw.value.s for kw in bl_info.keys if kw.s == 'warning'), '')
-      print('true' if warn == 'This Addon is still in Development!' else 'false')
+
+      bl_info = None
+      for node in tree.body:
+          if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'bl_info':
+              bl_info = node.value
+              break
+
+      if not isinstance(bl_info, ast.Dict):
+          raise ValueError('bl_info not found or malformed')
+
+      bl_dict = dict(zip([k.s for k in bl_info.keys], bl_info.values))
+      warn = bl_dict.get('warning')
+      if isinstance(warn, ast.Str):
+          print('true' if warn.s == 'This Addon is still in Development!' else 'false')
       ")
-      echo "PRERELEASE=$PRERELEASE" >> release.env
+            echo "PRERELEASE=$PRERELEASE" >> release.env
+
     - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
+
   artifacts:
     paths:
       - $ZIP_NAME
@@ -46,10 +70,10 @@ release:
     - |
       if [ "$PRERELEASE" = "true" ]; then
         TITLE="Blender Tools v$VERSION (Pre-Release)"
-        DESC="This is a pre-release version of Blender Tools.\n\nVersion: $VERSION"
+        DESC="⚠️ This is a pre-release version of Blender Tools.\n\nVersion: $VERSION"
       else
         TITLE="Blender Tools v$VERSION"
-        DESC="Stable release of Blender Tools.\n\nVersion: $VERSION"
+        DESC="✅ Stable release of Blender Tools.\n\nVersion: $VERSION"
       fi
       echo "RELEASE_TITLE=$TITLE" >> release.env
       echo -e "RELEASE_DESC=$DESC" >> release.env
