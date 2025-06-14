@@ -10,6 +10,7 @@ bundle_addon:
   stage: bundle
   image: python:3.11
   script:
+    - apt-get update && apt-get install -y jq zip
     - python3 .gitlab/ci/extract_bl_info.py "$ADDON_INIT" > bl_info.json
     - VERSION=$(jq -r .version bl_info.json)
       echo "VERSION=$VERSION" >> release.env
