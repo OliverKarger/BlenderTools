@@ -1,0 +1,20 @@
+{
+    "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+    // "python.analysis.typeCheckingMode": "strict",
+    // "python.analysis.diagnosticSeverityOverrides": {
+    //     "reportMissingParameterType": "error",
+    //     "reportMissingTypeArgument": "error",
+    //     "reportMissingTypeStubs": "none",         // to avoid noise from C extensions like bpy
+    //     "reportMissingModuleSource": "none",
+    //     "reportUnknownParameterType": "error",
+    //     "reportUnknownVariableType": "error",
+    //     "reportUnknownMemberType": "error",
+    //     "reportUnknownArgumentType": "error"
+    // }
+    "flake8.path": ["${workspaceFolder}\\.venv\\Scripts\\flake8.exe"],
+    "flake8.enabled": true,
+    "zenMode.fullScreen": false,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportInvalidTypeForm": "none"
+      }
+}
