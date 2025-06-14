@@ -1,0 +1,59 @@
+stages:
+  - bundle
+  - release
+
+variables:
+  ADDON_INIT: "__init__.py"
+  ZIP_NAME: "blendertools.zip"
+
+bundle_addon:
+  stage: bundle
+  image: python:3.11
+  script:
+    # Extract version and warning from __init__.py
+    - |
+      VERSION=$(python3 -c "
+import ast
+with open('$ADDON_INIT') as f:
+    tree = ast.parse(f.read())
+bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
+ver = next((kw.value for kw in bl_info.keys if kw.s == 'version'), None)
+if ver:
+    print('.'.join(str(n.value) for n in ver.elts))
+")
+      echo \"VERSION=$VERSION\" >> release.env
+    - |
+      PRERELEASE=$(python3 -c "
+import ast
+with open('$ADDON_INIT') as f:
+    tree = ast.parse(f.read())
+bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
+warn = next((kw.value.s for kw in bl_info.keys if kw.s == 'warning'), '')
+print('true' if warn == 'This Addon is still in Development!' else 'false')
+")
+      echo \"PRERELEASE=$PRERELEASE\" >> release.env
+    # Create ZIP archive of current directory (excluding .git, .venv etc.)
+    - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
+  artifacts:
+    paths:
+      - $ZIP_NAME
+      - release.env
+    reports:
+      dotenv: release.env
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Creating release for version $VERSION"
+  release:
+    tag_name: "v$VERSION"
+    description: "Blender Tools Addon version $VERSION"
+    ref: $CI_COMMIT_SHA
+    name: "Blender Tools v$VERSION"
+    released_at: $CI_COMMIT_TIMESTAMP
+    prerelease: $PRERELEASE
+    assets:
+      links:
+        - name: "Download .zip"
+          url: "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID/artifacts/file/$ZIP_NAME"
