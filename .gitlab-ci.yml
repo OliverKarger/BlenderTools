@@ -29,6 +29,11 @@ release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   variables:
     GIT_SSL_NO_VERIFY: "1"
+  before_script:
+    - apk --no-cache add openssl ca-certificates
+    - mkdir -p /usr/local/share/ca-certificates/extra
+    - openssl s_client -connect ${CI_SERVER_HOST}:${CI_SERVER_PORT} -servername ${CI_SERVER_HOST} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | tee "/usr/local/share/ca-certificates/${CI_SERVER_HOST}.crt" >/dev/null
+    - update-ca-certificates
   script:
     - |
       if [ "$PRERELEASE" = "true" ]; then
