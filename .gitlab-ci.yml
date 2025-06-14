@@ -10,29 +10,27 @@ bundle_addon:
   stage: bundle
   image: python:3.11
   script:
-    # Extract version and warning from __init__.py
     - |
       VERSION=$(python3 -c "
-import ast
-with open('$ADDON_INIT') as f:
-    tree = ast.parse(f.read())
-bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
-ver = next((kw.value for kw in bl_info.keys if kw.s == 'version'), None)
-if ver:
-    print('.'.join(str(n.value) for n in ver.elts))
-")
-      echo \"VERSION=$VERSION\" >> release.env
+      import ast
+      with open('$ADDON_INIT') as f:
+          tree = ast.parse(f.read())
+      bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
+      ver = next((kw.value for kw in bl_info.keys if kw.s == 'version'), None)
+      if ver:
+          print('.'.join(str(n.value) for n in ver.elts))
+      ")
+      echo "VERSION=$VERSION" >> release.env
     - |
       PRERELEASE=$(python3 -c "
-import ast
-with open('$ADDON_INIT') as f:
-    tree = ast.parse(f.read())
-bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
-warn = next((kw.value.s for kw in bl_info.keys if kw.s == 'warning'), '')
-print('true' if warn == 'This Addon is still in Development!' else 'false')
-")
-      echo \"PRERELEASE=$PRERELEASE\" >> release.env
-    # Create ZIP archive of current directory (excluding .git, .venv etc.)
+      import ast
+      with open('$ADDON_INIT') as f:
+          tree = ast.parse(f.read())
+      bl_info = next(n for n in tree.body if isinstance(n, ast.Assign) and n.targets[0].id == 'bl_info').value
+      warn = next((kw.value.s for kw in bl_info.keys if kw.s == 'warning'), '')
+      print('true' if warn == 'This Addon is still in Development!' else 'false')
+      ")
+      echo "PRERELEASE=$PRERELEASE" >> release.env
     - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
   artifacts:
     paths:
@@ -43,16 +41,27 @@ print('true' if warn == 'This Addon is still in Development!' else 'false')
 
 release:
   stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  image: python:3.11
   script:
-    - echo "Creating release for version $VERSION"
+    - |
+      if [ "$PRERELEASE" = "true" ]; then
+        TITLE="Blender Tools v$VERSION (Pre-Release)"
+        DESC="This is a pre-release version of Blender Tools.\n\nVersion: $VERSION"
+      else
+        TITLE="Blender Tools v$VERSION"
+        DESC="Stable release of Blender Tools.\n\nVersion: $VERSION"
+      fi
+      echo "RELEASE_TITLE=$TITLE" >> release.env
+      echo -e "RELEASE_DESC=$DESC" >> release.env
+  artifacts:
+    reports:
+      dotenv: release.env
+
   release:
     tag_name: "v$VERSION"
-    description: "Blender Tools Addon version $VERSION"
+    name: "$RELEASE_TITLE"
+    description: "$RELEASE_DESC"
     ref: $CI_COMMIT_SHA
-    name: "Blender Tools v$VERSION"
-    released_at: $CI_COMMIT_TIMESTAMP
-    prerelease: $PRERELEASE
     assets:
       links:
         - name: "Download .zip"
