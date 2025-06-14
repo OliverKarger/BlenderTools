@@ -19,14 +19,14 @@ bundle_addon:
     - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
   artifacts:
     paths:
-      - $ZIP_NAME
+      - $ZIP_NAME 
       - release.env
     reports:
       dotenv: release.env
 
 release:
   stage: release
-  image: python:3.11
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
   script:
     - |
       if [ "$PRERELEASE" = "true" ]; then
@@ -51,3 +51,4 @@ release:
       links:
         - name: "Download .zip"
           url: "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID/artifacts/file/$ZIP_NAME"
+
