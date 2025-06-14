@@ -14,7 +14,7 @@ bl_info = {
     "version": (2025, 0, 0),
     "blender": (4, 3, 0),
     "doc_url": "https://gitlab.karger.lan/oliver/blendertools",
-    "warning": "This Addon is still in Development!"
+    "warning": "This Addon is still in Development!",
 }
 
 

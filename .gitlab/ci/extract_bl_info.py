@@ -17,21 +17,25 @@ for node in tree.body:
 if not isinstance(bl_info, ast.Dict):
     raise ValueError("bl_info not found or malformed")
 
-bl_dict = dict(zip([k.s for k in bl_info.keys], bl_info.values))
 
-version = bl_dict.get("version")
-warning = bl_dict.get("warning")
+def extract_dict(d):
+    keys = [k.value for k in d.keys]  # assume all keys are Constant (str)
+    values = []
+    for v in d.values:
+        if isinstance(v, ast.Tuple):
+            values.append(tuple(elt.value for elt in v.elts))
+        elif isinstance(v, ast.Constant):  # Python 3.8+
+            values.append(v.value)
+        else:
+            values.append(None)
+    return dict(zip(keys, values))
 
-version_str = ""
-if isinstance(version, ast.Tuple):
-    version_str = ".".join(str(n.n) for n in version.elts)
 
-is_prerelease = (
-    isinstance(warning, ast.Str)
-    and warning.s == "This Addon is still in Development!"
+bl_dict = extract_dict(bl_info)
+
+version = bl_dict.get("version", ())
+warning = bl_dict.get("warning", "")
+
+print(
+    json.dumps({"version": ".".join(map(str, version)), "prerelease": warning == "This Addon is still in Development!"})
 )
-
-print(json.dumps({
-    "version": version_str,
-    "prerelease": is_prerelease
-}))
