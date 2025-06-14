@@ -27,6 +27,8 @@ bundle_addon:
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
+  variables:
+    GIT_SSL_NO_VERIFY: "1"
   script:
     - |
       if [ "$PRERELEASE" = "true" ]; then
