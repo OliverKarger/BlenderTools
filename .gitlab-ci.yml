@@ -1,0 +1,75 @@
+stages:
+  - lint
+  - bundle
+  - release
+
+variables:
+  ADDON_INIT: "__init__.py"
+  ZIP_NAME: "blendertools.zip"
+
+flake8_check:
+  stage: lint
+  image: python:3.11
+  script:
+    - python -m venv .venv
+    - . .venv/bin/activate
+    - pip install -r requirements.txt
+    - flake8 .
+
+bundle_addon:
+  stage: bundle
+  image: python:3.11
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+  script:
+    - apt-get update && apt-get install -y jq zip
+    - python3 .gitlab/ci/extract_bl_info.py "$ADDON_INIT" > bl_info.json
+    - VERSION=$(jq -r .version bl_info.json)
+    - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" >> release.env; fi
+    - PRERELEASE=$(jq -r .prerelease bl_info.json)
+    - if [ -n "$PRERELEASE" ]; then echo "PRERELEASE=$PRERELEASE" >> release.env; fi
+    - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
+  artifacts:
+    paths:
+      - $ZIP_NAME 
+      - release.env
+    reports:
+      dotenv: release.env
+    expire_in: 7 days
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  variables:
+    GIT_SSL_NO_VERIFY: "1"
+  before_script:
+    - apk --no-cache add openssl ca-certificates
+    - mkdir -p /usr/local/share/ca-certificates/extra
+    - openssl s_client -connect ${CI_SERVER_HOST}:${CI_SERVER_PORT} -servername ${CI_SERVER_HOST} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | tee "/usr/local/share/ca-certificates/${CI_SERVER_HOST}.crt" >/dev/null
+    - update-ca-certificates
+  script:
+    - |
+      if [ "$PRERELEASE" = "true" ]; then
+        TITLE="Blender Tools v$VERSION (Pre-Release)"
+        DESC="This is a pre-release version of Blender Tools. Version: $VERSION"
+      else
+        TITLE="Blender Tools v$VERSION"
+        DESC="Stable release of Blender Tools. Version: $VERSION"
+      fi
+      echo "RELEASE_TITLE=$TITLE" >> release.env
+      echo "RELEASE_DESC=$DESC" >> release.env
+  artifacts:
+    reports:
+      dotenv: release.env
+
+  release:
+    tag_name: "v$VERSION"
+    name: "$RELEASE_TITLE"
+    description: "$RELEASE_DESC"
+    ref: $CI_COMMIT_SHA
+    assets:
+      links:
+        - name: "Download .zip"
+          url: "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID/artifacts/file/$ZIP_NAME"

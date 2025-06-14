@@ -1,0 +1,50 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run flake8 linter",
+        "type": "shell",
+        "command": ".venv\\scripts\\flake8.exe",
+        "args": [
+          "."
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": ["$flake8"],
+        "presentation": {
+          "reveal": "always"
+        }
+      },
+      {
+        "label": "Format with black",
+        "type": "shell",
+        "command": ".venv\\scripts\\black.exe",
+        "args": [
+          "."
+        ],
+        "group": "build",
+        "presentation": {
+          "reveal": "always"
+        }
+      },
+      {
+        "label": "Format docstrings with docformatter",
+        "type": "shell",
+        "command": ".venv\\scripts\\docformatter.exe",
+        "args": [
+          "--in-place",
+          "--wrap-summaries", "120",
+          "--wrap-descriptions", "120",
+          "--pre-summary-newline",
+          "--recursive", "."
+        ],
+        "group": "build",
+        "presentation": {
+          "reveal": "always"
+        }
+      }
+    ]
+  }
+  
