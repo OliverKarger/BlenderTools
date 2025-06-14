@@ -10,42 +10,13 @@ bundle_addon:
   stage: bundle
   image: python:3.11
   script:
-    - >
-      VERSION=$(python3 -c "import ast
-      with open('$ADDON_INIT') as f:
-          tree = ast.parse(f.read())
-      bl_info = None
-      for node in tree.body:
-          if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'bl_info':
-              bl_info = node.value
-              break
-      if not isinstance(bl_info, ast.Dict):
-          raise ValueError('bl_info not found or malformed')
-      bl_dict = dict(zip([k.s for k in bl_info.keys], bl_info.values))
-      version = bl_dict.get('version')
-      if isinstance(version, ast.Tuple):
-          print('.'.join(str(n.n) for n in version.elts))")
-            echo "VERSION=$VERSION" >> release.env
-
-    - >
-      PRERELEASE=$(python3 -c "import ast
-      with open('$ADDON_INIT') as f:
-          tree = ast.parse(f.read())
-      bl_info = None
-      for node in tree.body:
-          if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'bl_info':
-              bl_info = node.value
-              break
-      if not isinstance(bl_info, ast.Dict):
-          raise ValueError('bl_info not found or malformed')
-      bl_dict = dict(zip([k.s for k in bl_info.keys], bl_info.values))
-      warn = bl_dict.get('warning')
-      if isinstance(warn, ast.Str):
-          print('true' if warn.s == 'This Addon is still in Development!' else 'false')")
-            echo "PRERELEASE=$PRERELEASE" >> release.env
-
-          - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
-
+    - pip install --quiet ast
+    - python3 .gitlab/ci/extract_bl_info.py "$ADDON_INIT" > bl_info.json
+    - VERSION=$(jq -r .version bl_info.json)
+      echo "VERSION=$VERSION" >> release.env
+    - PRERELEASE=$(jq -r .prerelease bl_info.json)
+      echo "PRERELEASE=$PRERELEASE" >> release.env
+    - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
   artifacts:
     paths:
       - $ZIP_NAME
@@ -57,7 +28,7 @@ release:
   stage: release
   image: python:3.11
   script:
-    - >
+    - |
       if [ "$PRERELEASE" = "true" ]; then
         TITLE="Blender Tools v$VERSION (Pre-Release)"
         DESC="This is a pre-release version of Blender Tools.\n\nVersion: $VERSION"
@@ -67,7 +38,6 @@ release:
       fi
       echo "RELEASE_TITLE=$TITLE" >> release.env
       echo -e "RELEASE_DESC=$DESC" >> release.env
-
   artifacts:
     reports:
       dotenv: release.env
