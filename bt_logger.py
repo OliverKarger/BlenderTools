@@ -21,6 +21,17 @@ class ColorFormatter(logging.Formatter):
 
 
 def get_logger(name: str) -> logging.Logger:
+    """
+    Provides functionality to create and configure a logger with a custom format
+    and stream handler. Ensures the logger avoids duplicate logging by disabling
+    propagation and only adds handlers if none exist.
+
+    Parameters:
+        name (str): The name of the logger to be created or retrieved.
+
+    Returns:
+        logging.Logger: A configured logger instance.
+    """
     logger = logging.getLogger(name)
     logger.propagate = False  # Prevent log duplication via parent
 

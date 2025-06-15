@@ -11,7 +11,17 @@ BASE_COMMANDS_DIR = pathlib.Path(__file__).parent / "commands"
 
 
 def import_command_module(path: pathlib.Path):
-    """Import a module from a given file path."""
+    """
+    Imports a Python module from the given file path. The module is dynamically
+    loaded using importlib utilities. If the import fails due to an invalid or
+    unloadable module, an error is logged, and the program exits with status code 1.
+
+    Parameters:
+        path (pathlib.Path): The file path of the module to import.
+
+    Returns:
+        ModuleType: The dynamically imported module.
+    """
     spec = importlib.util.spec_from_file_location(name=path.stem, location=str(path))
     if spec is None or spec.loader is None:
         logger.error(f"Cannot import module from {path}")
@@ -24,7 +34,29 @@ def import_command_module(path: pathlib.Path):
 
 
 def ensure_module_attributes(module, path, required_attrs):
-    """Ensure a module has all required attributes, or exit."""
+    """
+    Ensures the presence of required attributes in a module.
+
+    This function checks if a given module contains all the attributes listed
+    in the required attributes parameter. If any required attribute is
+    missing, it logs a warning message and terminates the program with
+    a status code of 1.
+
+    Parameters:
+        module: Any
+            The module object to be checked for the presence of required
+            attributes.
+        path: str
+            The path or name of the module being checked, used in the
+            log message for context.
+        required_attrs: List[str]
+            A list of attribute names to check for within the module.
+
+    Raises:
+        SystemExit:
+            If any required attribute is missing from the module, the system
+            exits with a status code of 1.
+    """
     for attr in required_attrs:
         if not hasattr(module, attr):
             logger.warning(f"'{path}' is missing required attribute: {attr}")
@@ -32,6 +64,30 @@ def ensure_module_attributes(module, path, required_attrs):
 
 
 def parse():
+    """
+    Parses command-line arguments and configures the application command structure.
+
+    This function defines a command-line interface (CLI) for managing various
+    tools. It leverages hierarchical argument parsing to accommodate both
+    single-command and multi-command groups, allowing for a flexible toolset
+    architecture. The CLI consists of a global argument parser, group-level
+    parsers for command categories, and subparsers for specific subcommands.
+    Dynamic loading is used to incorporate commands declared in external
+    modules based on a predefined directory structure.
+
+    Arguments are parsed using the argparse library and are returned as a
+    namespace. Handlers for commands are dynamically set at runtime and can
+    be invoked later as per user input.
+
+    Returns:
+        argparse.Namespace: The parsed command-line arguments containing all
+        flags, options, and other parameters, as well as the appropriate
+        handler function for the selected command.
+
+    Raises:
+        SystemExit: If a command or group fails to provide a valid 'handle'
+        function or if argument parsing encounters unrecoverable errors.
+    """
     # Global flags
     global_parser = argparse.ArgumentParser(add_help=False)
     global_parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")

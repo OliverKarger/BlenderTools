@@ -1,8 +1,7 @@
 import bpy
-import gpu
-from gpu_extras.batch import batch_for_shader
 
 from .. import bt_logger
+from ...utils.viewport_visualizer import draw_objects_wireframe
 
 logger = bt_logger.get_logger(__name__)
 
@@ -17,36 +16,49 @@ _overlay_data = {
 
 
 def get_colliders(context):
+    """
+    Generate a list of mesh objects with enabled collision in the provided scene context.
+
+    This function iterates over all objects in the scene of the given context and filters
+    those that are of type "MESH" and have collision enabled. Collision is considered enabled
+    if both the `collision` attribute and the `collision.use` attribute of the object are true.
+
+    Parameters:
+        context (Context): The scene context containing all objects to be filtered.
+
+    Returns:
+        list: A list of objects from the scene that meet the collision and type criteria.
+    """
     return [obj for obj in context.scene.objects if obj.collision and obj.collision.use and obj.type == "MESH"]
 
 
 def draw_callback(context):
-    wire_color = (1.0, 0.0, 0.0, 0.6)
+    """
+    Draws the wireframe overlay for simulation colliders using specified context and wire color.
+
+    Checks if the 'blendertools' addon is enabled in the user's preferences. If enabled, it retrieves
+    the wire color for collider visualization from the addon's preferences. Otherwise, a default red
+    wire color is used. Utilizes the `draw_objects_wireframe` function to render the wireframe for the
+    objects listed in the `_overlay_data["colliders"]` variable.
+    """
     addon = context.preferences.addons.get("blendertools")
+    wire_color = (1.0, 0.0, 0.0, 0.6)
     if addon:
-        wire_color = addon.preferences.collidervisu_wire_color
+        wire_color = addon.preferences.simulation.collidervisu_wire_color
 
-    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
-    shader.bind()
-    shader.uniform_float("color", wire_color)  # Red-ish
-
-    for obj in _overlay_data["colliders"]:
-        if not obj.visible_get():
-            continue
-
-        mesh = obj.to_mesh()
-        if not mesh:
-            continue
-
-        verts = [obj.matrix_world @ v.co for v in mesh.vertices]
-        edges = [(e.vertices[0], e.vertices[1]) for e in mesh.edges]
-
-        batch = batch_for_shader(shader, "LINES", {"pos": verts}, indices=edges)
-        batch.draw(shader)
-        obj.to_mesh_clear()
+    draw_objects_wireframe(context, _overlay_data["colliders"], wire_color)
 
 
 class BlenderTools_ShowColliderOverlay(bpy.types.Operator):
+    """Operator to show a collider overlay in the Blender viewport.
+
+    This operator allows users to highlight and visualize colliders in the Blender
+    viewport by enabling specific overlay settings. It ensures that all colliders
+    are temporarily unhidden and customized with wireframe and color properties
+    for better visibility during the operation. The operator maintains and restores
+    the original visibility and display settings after modifications.
+    """
+
     bl_idname = "blendertools.show_collider_overlay"
     bl_label = "Show Collider Overlay"
 
@@ -63,10 +75,6 @@ class BlenderTools_ShowColliderOverlay(bpy.types.Operator):
 
         for obj in _overlay_data["colliders"]:
             obj.hide_viewport = False  # Temporarily unhide to draw
-            obj.show_wire = True
-            obj.show_all_edges = True
-            obj.display_type = "WIRE"
-            obj.color = (1.0, 0.2, 0.2, 1.0)
             logger.debug(f"Overlay: highlighting {obj.name}")
 
         _overlay_data["handle"] = bpy.types.SpaceView3D.draw_handler_add(
@@ -77,6 +85,15 @@ class BlenderTools_ShowColliderOverlay(bpy.types.Operator):
 
 
 class BlenderTools_HideColliderOverlay(bpy.types.Operator):
+    """
+    Operator to hide the collider overlay in Blender.
+
+    This class provides functionality to manage and remove the collider overlay, including
+    the restoration of object properties like wireframe display, viewport visibility, colors,
+    and display types to their original states. It also removes the draw handler associated
+    with the overlay and clears the cache data stored for the colliders.
+    """
+
     bl_idname = "blendertools.hide_collider_overlay"
     bl_label = "Hide Collider Overlay"
 

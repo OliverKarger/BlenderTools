@@ -4,6 +4,14 @@ import os
 
 
 def serialize_node_group(group):
+    """
+    Serializes a node group into a dictionary representation.
+
+    This function processes a node group and extracts its relevant attributes
+    along with its inputs, outputs, nodes, and links. The resulting dictionary
+    representation provides a structured summary of the node group for external
+    usage, ensuring each element of the group is comprehensively captured.
+    """
     # Tag the node group as a template
     group["is_template"] = True
 
@@ -42,6 +50,28 @@ def serialize_node_group(group):
 
 
 def get_template_node_groups(self, context):
+    """
+    Gets the list of template node groups from Blender's node groups.
+
+    The function filters node groups in Blender that are of type 'ShaderNodeTree' and
+    have the custom property 'is_template' set to True. It returns a list of tuples
+    containing the name of the group as both the identifier and label. If no such
+    node groups are found, a default single entry indicating no templates are found
+    is returned.
+
+    Parameters:
+        context: Any
+            The context in which the function is executed. It is not
+            directly used but is part of the method signature due to
+            Blender API conventions.
+
+    Returns:
+        list[tuple[str, str, str]]
+            A list of tuples where each tuple contains the following:
+            - The identifier of the node group.
+            - The label of the node group.
+            - An empty description string.
+    """
     return [
         (group.name, group.name, "")
         for group in bpy.data.node_groups
@@ -50,6 +80,30 @@ def get_template_node_groups(self, context):
 
 
 def import_template_from_file(filepath):
+    """
+    Imports a template from a JSON file and creates a corresponding node group in Blender.
+
+    This function reads a specified JSON file containing template data for a node group,
+    creates a new ShaderNodeTree node group in Blender's data structure, and initializes
+    its inputs, outputs, and node connections based on the file's content. The function ensures
+    unique naming for the node group and nodes. Any broken links in the template will be
+    skipped and logged as messages.
+
+    Parameters:
+        filepath (str): The path to the JSON file containing template data.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist or cannot be opened.
+        json.JSONDecodeError: If the JSON file contains invalid JSON content.
+
+    Notes:
+        - The JSON file is expected to have a specific structure, including keys for
+          "inputs", "outputs", "nodes", and "links".
+        - Socket types are assumed to be "NodeSocketFloat" for inputs and
+          "NodeSocketShader" for outputs unless specified otherwise in the template.
+        - If a node group with the specified name already exists, a "_copy" suffix is
+          added to the new name to ensure uniqueness.
+    """
     with open(filepath, "r") as f:
         data = json.load(f)
 
@@ -85,6 +139,30 @@ def import_template_from_file(filepath):
 
 
 def auto_import_templates():
+    """
+    Auto-imports templates for the Blendertools add-on.
+
+    This function checks if the Blendertools add-on is enabled and then
+    retrieves user preferences to determine whether auto-import is enabled.
+    If auto-import is enabled, it resolves template directories from the
+    default location and any additional user-defined paths. Templates found
+    in these directories that match the `.json` extension are imported using
+    the `import_template_from_file` function.
+
+    Raises exceptions if a template file fails to import and logs all
+    processing activities to the system console.
+
+    Returns
+    -------
+    None
+        Returns None if the add-on is not enabled or auto-import is
+        disabled. Also serves as the termination for the timer used for this
+        process.
+
+    Parameters
+    ----------
+    None
+    """
     addon = bpy.context.preferences.addons.get("blendertools")
     if not addon:
         return None

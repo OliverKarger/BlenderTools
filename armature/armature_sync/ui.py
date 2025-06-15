@@ -2,6 +2,20 @@ import bpy
 
 
 def view3d_context_menu(self, context):
+    """
+    Invoke the 3D Viewport context menu for armature-related operations within the Blender environment.
+    Provides operators for setting the source and target armatures when the active object is of type
+    ARMATURE and the relevant add-on is enabled.
+
+    Parameters:
+        self: This instance of the panel invokes the method.
+        context: Provides access to Blender's RNA contexts, including required add-on and
+            active object information.
+
+    Returns:
+        bool: False if the required add-on ("blendertools") is not active. Otherwise, does not
+        explicitly return a value.
+    """
     addon = context.preferences.addons.get("blendertools")
     if not addon:
         return False
@@ -16,6 +30,16 @@ def view3d_context_menu(self, context):
 
 
 class BONE_UL_bone_list(bpy.types.UIList):
+    """
+    Defines a custom UI list class to display and interact with a list of bones.
+    This class inherits from `bpy.types.UIList` and provides custom drawing
+    behaviors for bone items in the UI.
+
+    The class is designed to handle the display of bones in two layouts:
+    'DEFAULT'/'COMPACT' and 'GRID'. It customizes how each bone item appears,
+    including properties like synchronization and name display with icons.
+    """
+
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             row = layout.row()
@@ -32,55 +56,13 @@ class BONE_UL_bone_list(bpy.types.UIList):
             layout.label(text="", icon="BONE_DATA")
 
 
-class VIEW3D_PT_armature_sync(bpy.types.Panel):
-    bl_label = "Armature Sync"
-    bl_idname = "VIEW3D_PT_armature_sync"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_category = "Blender Tools"
-
-    @classmethod
-    def poll(cls, context):
-        addon = context.preferences.addons.get("blendertools")
-        if addon:
-            return addon.preferences.enable_armature
-        else:
-            return False
-
-    def draw(self, context):
-        layout = self.layout
-        props = context.scene.blendertools_armaturesync
-
-        layout.label(text="Armature Sync Tools")
-
-        layout.prop(props, "source_armature")
-        layout.prop(props, "target_armature")
-        layout.prop(props, "constraint_mix_mode")
-
-        layout.separator()
-
-        row = layout.row(align=True)
-        row.operator("blendertools.armature_sync_enum", icon="ARMATURE_DATA")
-        row.operator("blendertools.armature_sync_check", icon="INFO")
-
-        layout.template_list("BONE_UL_bone_list", "", props, "bones", props, "active_bone_index")
-
-        layout.separator()
-
-        row = layout.row(align=True)
-        row.operator("blendertools.armature_sync_enable", icon="LINKED")
-        row.operator("blendertools.armature_sync_disable", icon="UNLINKED")
-
-
 def register():
     bpy.utils.register_class(BONE_UL_bone_list)
-    bpy.utils.register_class(VIEW3D_PT_armature_sync)
 
     bpy.types.VIEW3D_MT_object_context_menu.append(view3d_context_menu)
 
 
 def unregister():
-    bpy.utils.unregister_class(VIEW3D_PT_armature_sync)
     bpy.utils.unregister_class(BONE_UL_bone_list)
 
     bpy.types.VIEW3D_MT_object_context_menu.remove(view3d_context_menu)

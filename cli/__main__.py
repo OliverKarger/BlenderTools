@@ -8,6 +8,17 @@ logger = bt_logger.get_logger(__name__)
 
 
 def main():
+    """
+    Main entry point for the application.
+
+    This function configures the logging level, parses command-line arguments,
+    and executes the appropriate handler function if defined.
+    If no handler function is defined or callable, an error message is printed.
+
+    Raises:
+        AttributeError: If `args` lacks the `handler` attribute but this is not callable.
+
+    """
     bt_logger.global_log_level = logging.CRITICAL
 
     logger.debug(f"Running in {os.getcwd()}")

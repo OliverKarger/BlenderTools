@@ -1,70 +1,47 @@
 import bpy
 
-from . import properties
+from ..armature import preferences as armature_preferences
+from ..camera import preferences as camera_preferences
+from ..cli import preferences as cli_preferences
+from ..node_groups import preferences as nodegroups_preferences
+from ..simulation import preferences as simulation_preferences
+from ..utils.icons import IconManager
 
 
 class BlendertoolsAddonPreferences(bpy.types.AddonPreferences):
+    """
+    Represents the preferences for the BlenderTools addon.
+
+    This class is used to define and manage the configurable preferences of the BlenderTools addon.
+    It allows users to adjust various settings related to different components of the addon, such
+    as armature preferences, camera preferences, CLI preferences, node group preferences, and
+    simulation preferences. Each category of preferences is managed separately and can be drawn
+    in the user interface for interaction.
+    """
+
     # IMPORTANT: This must match the addon folder name
     bl_idname = "blendertools"
 
-    auto_import_enabled: bpy.props.BoolProperty(
-        name="Enable Auto Import", description="Automatically import templates at addon startup", default=True
-    )
-
-    additional_import_paths: bpy.props.CollectionProperty(type=properties.TemplatePathItem, name="Additional Paths")
-
-    enable_armature: bpy.props.BoolProperty(name="Enable Armature Tools", default=True)
-    enable_node_groups: bpy.props.BoolProperty(name="Enable Node Group Tools", default=True)
-    enable_workflow: bpy.props.BoolProperty(name="Enable Workflows", default=True)
-    enable_rpc_remote: bpy.props.BoolProperty(name="Enable RPC Remoting", default=False)
-    enable_simulation: bpy.props.BoolProperty(name="Enable Simulation Tools", default=True)
-    enable_octane: bpy.props.BoolProperty(name="Enable Octane Tools", default=True)
-
-    sbrebind_max_depth: bpy.props.IntProperty(name="Max Depth", default=48, min=0, max=1024)
-
-    collidervisu_wire_color: bpy.props.FloatVectorProperty(
-        name="Wire Color", subtype="COLOR", size=4, default=(1.0, 0.0, 0.0, 1.0), min=0.0, max=0.0  # noqa:F821
-    )
+    armature: bpy.props.PointerProperty(type=armature_preferences.ArmaturePreferences)
+    camera: bpy.props.PointerProperty(type=camera_preferences.CameraPreferences)
+    cli: bpy.props.PointerProperty(type=cli_preferences.CliPreferences)
+    node_groups: bpy.props.PointerProperty(type=nodegroups_preferences.NodeGroupsPreferences)
+    simulation: bpy.props.PointerProperty(type=simulation_preferences.SimulationPreferences)
 
     def draw(self, context):
         layout = self.layout
 
-        # --- Enable Settings Box ---
-        enable_box = layout.box()
-        enable_box.label(text="Settings", icon="PREFERENCES")
-        enable_box.prop(self, "enable_armature")
-        enable_box.prop(self, "enable_node_groups")
-        enable_box.prop(self, "enable_workflow")
-        enable_box.prop(self, "enable_rpc_remote")
-        enable_box.prop(self, "enable_simulation")
-        enable_box.prop(self, "enable_octane")
+        box = layout.box()
+        box.label(
+            text="A Collection of personal Scripts, combined into a single Addon that i use in my Day-to-Day Work with Blender",  # noqa: E501
+            icon_value=IconManager.get_icon_id(),
+        )
 
-        if self.enable_node_groups:
-            box = layout.box()
-            box.label(text="Node Group Tools Settings", icon="NODE")
-            box.prop(self, "auto_import_enabled")
-            path_box = box.box()
-            path_box.label(text="Additional Import Paths", icon="FILE_FOLDER")
-            layout.operator("blendertools.add_template_path", icon="ADD")
-            for idx, item in enumerate(self.additional_import_paths):
-                row = path_box.row()
-                row.prop(item, "path", text=f"Path {idx + 1}")
-                op = row.operator("blendertools.remove_template_path", text="", icon="X")
-                op.index = idx
-
-        if self.enable_simulation:
-            box = layout.box()
-            box.label(text="Softbody Tools Settings", icon="PHYSICS")
-            box.prop(self, "sbrebind_max_depth")
-
-            box = layout.box()
-            box.label(text="Collider Visualizer Settings", icon="PHYSICS")
-            box.prop(self, "collidervisu_wire_color")
-
-        cli_box = layout.box()
-        cli_box.label(text="Command Line Interface")
-        cli_box.operator("blendertools.install_wrapper_script")
-        cli_box.operator("blendertools.uninstall_wrapper_script")
+        self.armature.draw(layout)
+        self.camera.draw(layout)
+        self.cli.draw(layout)
+        self.node_groups.draw(layout)
+        self.simulation.draw(layout)
 
 
 def register():

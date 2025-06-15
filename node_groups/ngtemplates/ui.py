@@ -1,46 +1,11 @@
-import bpy
-
-
-class NODE_PT_ngtemplates_panel(bpy.types.Panel):
-    bl_space_type = "NODE_EDITOR"
-    bl_region_type = "UI"
-    bl_category = "Blender Tools"
-    bl_label = "Node Templates"
-
-    @classmethod
-    def poll(cls, context):
-        addon = context.preferences.addons.get("blendertools")
-        if addon:
-            return addon.preferences.enable_node_groups and context.space_data.tree_type == "ShaderNodeTree"
-        else:
-            return False
-
-    def draw(self, context):
-        layout = self.layout
-        col = layout.column()
-        node = context.active_node
-
-        if node and node.type == "GROUP":
-            col.label(text=f"Selected: {node.name}")
-            col.operator("blendertools.export_ngtemplate", text="Export to JSON")
-        else:
-            col.label(text="Select a Node Group", icon="INFO")
-
-        layout.operator("blendertools.add_node_group_template_modal")
-        layout.operator("blendertools.import_ngtemplate")
-
-
 def templates_menu(self, context):
+    """
+    Provides functionality for creating a menu for selecting Blender templates.
+
+    This function adds a separator line and a menu to the Blender UI layout,
+    allowing users to access a predefined menu named "NODE_MT_ngtemplates_menu".
+    The menu serves as an entry point for utilizing Blender tools templates.
+    """
     layout = self.layout
     layout.separator()
     layout.menu("NODE_MT_ngtemplates_menu", text="Blender Tools Templates")
-
-
-def register():
-    bpy.utils.register_class(NODE_PT_ngtemplates_panel)
-    # py.types.NODE_MT_context_menu.append(templates_menu)
-
-
-def unregister():
-    bpy.utils.unregister_class(NODE_PT_ngtemplates_panel)
-    # bpy.types.NODE_MT_context_menu.remove(templates_menu)
