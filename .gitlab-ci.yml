@@ -21,6 +21,7 @@ bundle_addon:
   image: python:3.11
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - apt-get update && apt-get install -y jq zip
     - python3 .gitlab/ci/extract_bl_info.py "$ADDON_INIT" > bl_info.json

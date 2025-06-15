@@ -3,4 +3,4 @@ max-line-length = 120
 exclude = .venv,cli/bt_logger.py
 docstring-convention = google
 select = E,F,W,D,B,B950
-ignore = D210 D100 D101 D102 D103 D104 D107 F722
+ignore = D100 D101 D102 D103 D104 D107 D205 D210 D212 D415 D417 F722

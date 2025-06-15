@@ -4,6 +4,15 @@ from . import utils
 
 
 class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
+    """
+    Operator to check compatibility between two armatures in Blender.
+
+    This class checks the compatibility of two armatures in a Blender scene by verifying
+    their scales and comparing their bone structures. It ensures that both armatures are
+    of type 'ARMATURE', checks for uniform scaling, calculates relative scale differences,
+    and compares bone lists to identify any discrepancies.
+    """
+
     bl_idname = "blendertools.armature_sync_check"
     bl_label = "Check Compatibility"
 
@@ -71,6 +80,16 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
+    """
+    Operator class to enumerate matching bones between source and target armatures.
+
+    This operator is used to identify and enumerate bones that are common between a
+    source armature and a target armature in a Blender scene. It ensures that both
+    source and target objects are of type 'ARMATURE', and it requires valid armature
+    objects to function. The matching bones are processed and added to a custom property
+    list belonging to the current scene.
+    """
+
     bl_idname = "blendertools.armature_sync_enum"
     bl_label = "Enumerate Bones"
 
@@ -112,6 +131,17 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
+    """
+    Operator to enable synchronization between armatures in Blender.
+
+    This class defines an operator to apply synchronization constraints between
+    a source armature and a target armature in Blender. It ensures that bone
+    movements in the source armature are mirrored in the target armature by
+    creating appropriate constraints. The operator also offers functionality to
+    detect and handle potential scale mismatches and allows for user interactions
+    to adjust syncing behavior as needed.
+    """
+
     bl_idname = "blendertools.armature_sync_enable"
     bl_label = "Enable Armature Sync"
 
@@ -185,6 +215,15 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
 
 class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
+    """
+    Disable Armature Sync.
+
+    This operator disables armature synchronization by removing specific constraints
+    named "ArmatureSync" from the targeted armature's pose bones. It is designed to
+    operate within Blender's context, and it requires properly set source and target
+    armatures to function correctly.
+    """
+
     bl_idname = "blendertools.armature_sync_disable"
     bl_label = "Disable Armature Sync"
 
@@ -228,6 +267,30 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
 
 class BlenderTools_OT_set_armature_source(bpy.types.Operator):
+    """
+    Operator to set the active object as the source armature.
+
+    This operator is used to assign the currently active object as the source
+    armature within the Blender Tools add-on context. It modifies the
+    blendertools_armaturesync property in the current scene with the active
+    object. This operator assumes the context has a valid active object and
+    the required property structure.
+
+    Attributes
+    ----------
+    bl_idname : str
+        The unique identifier of this operator, used to invoke it in scripts and UI.
+    bl_label : str
+        The display name of the operator, shown in Blender's UI.
+
+    Methods
+    -------
+    execute(context: bpy.types.Context) -> Set[str]
+        Sets the currently selected active object as the source armature in the
+        blendertools_armaturesync scene property. It returns an indication of
+        successful operation.
+    """
+
     bl_idname = "blendertools.set_armature_source"
     bl_label = "Set as Source Armature"
 
@@ -238,6 +301,30 @@ class BlenderTools_OT_set_armature_source(bpy.types.Operator):
 
 
 class BlenderTools_OT_set_armature_target(bpy.types.Operator):
+    """
+    Defines an operator to set the active object as the target armature.
+
+    This operator allows the user to designate the currently active object
+    as the target armature in the BlenderTools Armature Sync properties.
+    It is designed to work within the Blender scripting environment and
+    manages the synchronization of armatures for the related tools in
+    the workflow.
+
+    Attributes
+    ----------
+    bl_idname : str
+        Identifier string for the operator, used by Blender to register
+        and refer to the operator in scripts and UI.
+    bl_label : str
+        Display name of the operator that appears in the Blender UI.
+
+    Methods
+    -------
+    execute(context: bpy.types.Context) -> dict
+        Executes the operator logic that sets the active object as the
+        target armature in the BlenderTools Armature Sync properties.
+    """
+
     bl_idname = "blendertools.set_armature_target"
     bl_label = "Set as Target Armature"
 
