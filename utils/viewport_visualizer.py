@@ -1,27 +1,51 @@
 import gpu
 from gpu_extras.batch import batch_for_shader
+from .. import bt_logger
+
+logger = bt_logger.get_logger(__name__)
 
 
-def draw_objects_wireframe(context, objects, color=(1.0, 0.0, 0.0, 1.0)):
+def build_wireframe_batches(objects, cache):
     """
-    Draw objects in a wireframe style using a specified color.
+    Build GPU wireframe batches for the given objects and store in the provided cache.
 
-    The function renders a list of given 3D objects as wireframes in the Blender viewport.
-    The wireframe rendering is done using the provided color and the object's vertices and
-    edges information. Non-visible objects and objects without associated mesh data are
-    ignored during the drawing process.
+    Args:
+        objects (list of bpy.types.Object): Mesh objects to draw.
+        cache (dict): Dictionary to store the generated batches.
+    """
+    cache.clear()
+    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
 
-    Parameters:
-        context (bpy.types.Context): Context of the current Blender operation.
-        objects (List[bpy.types.Object]): List of Blender objects to be rendered in wireframe.
-        color (Tuple[float, float, float, float], optional): RGBA color for the wireframe.
-            Default is (1.0, 0.0, 0.0, 1.0).
+    for obj in objects:
+        if obj.type != "MESH" or not obj.visible_get():
+            continue
 
-    Raises:
-        None
+        try:
+            mesh = obj.to_mesh()
+            if not mesh:
+                continue
 
-    Returns:
-        None
+            verts = [obj.matrix_world @ v.co for v in mesh.vertices]
+            edges = [(e.vertices[0], e.vertices[1]) for e in mesh.edges]
+            batch = batch_for_shader(shader, "LINES", {"pos": verts}, indices=edges)
+
+            cache[obj.name] = batch
+            obj.to_mesh_clear()
+            logger.info(f"Computed Wireframe Cache for {len(cache)} Objects")
+
+        except Exception as e:
+            logger.error(f"Error creating batch for {obj.name}: {e}")
+
+
+def draw_objects_wireframe(context, objects, cache, color=(1.0, 0.0, 0.0, 1.0)):
+    """
+    Draw wireframes using prebuilt batches from the given cache.
+
+    Args:
+        context: Blender context.
+        objects: List of objects to draw.
+        cache: Dict of object name → batch.
+        color: RGBA tuple for wireframe color.
     """
     shader = gpu.shader.from_builtin("UNIFORM_COLOR")
     shader.bind()
@@ -30,14 +54,6 @@ def draw_objects_wireframe(context, objects, color=(1.0, 0.0, 0.0, 1.0)):
     for obj in objects:
         if not obj.visible_get():
             continue
-
-        mesh = obj.to_mesh()
-        if not mesh:
-            continue
-
-        verts = [obj.matrix_world @ v.co for v in mesh.vertices]
-        edges = [(e.vertices[0], e.vertices[1]) for e in mesh.edges]
-
-        batch = batch_for_shader(shader, "LINES", {"pos": verts}, indices=edges)
-        batch.draw(shader)
-        obj.to_mesh_clear()
+        batch = cache.get(obj.name)
+        if batch:
+            batch.draw(shader)

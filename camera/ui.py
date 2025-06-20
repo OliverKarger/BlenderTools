@@ -1,19 +1,28 @@
 import bpy
 
+from ..utils.icons import ICON_MAP
 
-class VIEW3D_PT_blendertools_camera(bpy.types.Panel):
-    """
-    Represents the Camera panel within the 3D View UI in Blender.
+from . import ifo_visualizer
+from . import ifo_optimizer
 
-    This class defines a custom user interface panel for cameras in Blender,
-    displayed in the "Blender Tools" category of the 3D View sidebar. It provides
-    tools specific to camera management and visualization within a Blender scene.
-    It ensures functionality is enabled based on the add-on preferences and
-    context of the current object.
-    """
 
+class BlenderTools_Camera_HiddenObjectsList(bpy.types.UIList):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        # item = BlenderTools_IfoOptimizerItem
+        obj_icon = "OBJECT_DATAMODE"
+
+        obj_icon = ICON_MAP.get(item.object_type, "OBJECT_DATAMODE")
+
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
+            layout.label(text=item.name, icon=obj_icon)
+        elif self.layout_type == "GRID":
+            layout.alignment = "CENTER"
+            layout.label(text="", icon=obj_icon)
+
+
+class BlenderTools_CameraPanel(bpy.types.Panel):
     bl_label = "Camera"
-    bl_idname = "VIEW3D_PT_blendertools_camera"
+    bl_idname = "BlenderTools_CameraPanel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Blender Tools"
@@ -25,16 +34,47 @@ class VIEW3D_PT_blendertools_camera(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        if bpy.context.object and bpy.context.object.type == "CAMERA":
-            box = layout.box()
-            box.label(text="IFO Visualizer")
-            box.operator("blendertools.ifo_visualizer_enable")
-            box.operator("blendertools.ifo_visualizer_disable")
+        addon = context.preferences.addons.get("blendertools")
+        visualizer_props = context.scene.blendertools_ifovisualizer
+        optimizer_props = context.scene.blendertools_ifooptimizer
+
+        box = layout.box()
+        box.label(text="IFO Visualizer")
+        if not addon.preferences.settings.viewport_selector_enabled:
+            box.prop(visualizer_props, "camera", icon="CAMERA_DATA")
+        elif context.active_object and context.active_object.type == "CAMERA":
+            box.label(text=f"Camera: {context.active_object.name}")
+
+        if visualizer_props.camera or addon.preferences.settings.viewport_selector_enabled:
+            box.operator(ifo_visualizer.operators.BlenderTools_IfoVisualizer_Enable.bl_idname, icon="HIDE_OFF")
+            box.operator(ifo_visualizer.operators.BlenderTools_IfoVisualizer_Disable.bl_idname, icon="HIDE_ON")
+
+        box = layout.box()
+        box.label(text="IFO Optimizer")
+        if not addon.preferences.settings.viewport_selector_enabled:
+            box.prop(visualizer_props, "camera", icon="CAMERA_DATA")
+        elif context.active_object and context.active_object.type == "CAMERA":
+            box.label(text=f"Camera: {context.active_object.name}")
+
+        if optimizer_props.camera or addon.preferences.settings.viewport_selector_enabled:
+            box.operator(ifo_optimizer.operators.BlenderTools_IfoOptimizer_ShowObjects.bl_idname, icon="HIDE_OFF")
+            box.operator(ifo_optimizer.operators.BlenderTools_IfoOptimizer_HideObjects.bl_idname, icon="HIDE_ON")
+
+            box.template_list(
+                "BlenderTools_Camera_HiddenObjectsList",
+                "",
+                optimizer_props,
+                "hidden_objects",
+                optimizer_props,
+                "active_item_index",
+            )
 
 
 def register():
-    bpy.utils.register_class(VIEW3D_PT_blendertools_camera)
+    bpy.utils.register_class(BlenderTools_Camera_HiddenObjectsList)
+    bpy.utils.register_class(BlenderTools_CameraPanel)
 
 
 def unregister():
-    bpy.utils.unregister_class(VIEW3D_PT_blendertools_camera)
+    bpy.utils.unregister_class(BlenderTools_Camera_HiddenObjectsList)
+    bpy.utils.unregister_class(BlenderTools_CameraPanel)

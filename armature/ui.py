@@ -1,18 +1,11 @@
 import bpy
 
+from . import armature_sync
 
-class VIEW3D_PT_blendertools_armature(bpy.types.Panel):
-    """
-    Represents the Blender UI Panel for armature tools in Blender Tools add-on.
 
-    This panel provides user interface elements for managing and synchronizing
-    armatures in the 3D View editor. It includes options for selecting source and
-    target armatures, setting constraint mix modes, enabling or disabling
-    synchronization, and a list to display bones with related controls.
-    """
-
+class BlenderTools_ArmaturePanel(bpy.types.Panel):
     bl_label = "Armature"
-    bl_idname = "VIEW3D_PT_blendertools_armature"
+    bl_idname = "BlenderTools_ArmaturePanel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Blender Tools"
@@ -29,28 +22,31 @@ class VIEW3D_PT_blendertools_armature(bpy.types.Panel):
         box = layout.box()
         box.label(text="Armature Sync")
 
-        box.prop(props, "source_armature")
-        box.prop(props, "target_armature")
-        box.prop(props, "constraint_mix_mode")
+        box.prop(props, "source_armature", icon="ARMATURE_DATA")
+        box.prop(props, "target_armature", icon="ARMATURE_DATA")
+        box.prop(props, "constraint_mix_mode", icon="CONSTRAINT")
 
-        box.separator()
+        if props.source_armature and props.target_armature:
+            box.separator()
 
-        row = box.row(align=True)
-        row.operator("blendertools.armature_sync_enum", icon="ARMATURE_DATA")
-        row.operator("blendertools.armature_sync_check", icon="INFO")
+            row = box.row(align=True)
+            row.operator(armature_sync.operators.BlenderTools_ArmatureSync_Enum.bl_idname, icon="ARMATURE_DATA")
+            row.operator(armature_sync.operators.BlenderTools_ArmatureSync_Check.bl_idname, icon="INFO")
 
-        box.template_list("BONE_UL_bone_list", "", props, "bones", props, "active_bone_index")
+            box.prop(props, "bone_collections", text="Bone Collection")
 
-        box.separator()
+            box.template_list("BONE_UL_bone_list", "", props, "bones", props, "active_bone_index")
 
-        row = box.row(align=True)
-        row.operator("blendertools.armature_sync_enable", icon="LINKED")
-        row.operator("blendertools.armature_sync_disable", icon="UNLINKED")
+            box.separator()
+
+            row = box.row(align=True)
+            row.operator(armature_sync.operators.BlenderTools_ArmatureSync_Enable.bl_idname, icon="LINKED")
+            row.operator(armature_sync.operators.BlenderTools_ArmatureSync_Disable.bl_idname, icon="UNLINKED")
 
 
 def register():
-    bpy.utils.register_class(VIEW3D_PT_blendertools_armature)
+    bpy.utils.register_class(BlenderTools_ArmaturePanel)
 
 
 def unregister():
-    bpy.utils.unregister_class(VIEW3D_PT_blendertools_armature)
+    bpy.utils.unregister_class(BlenderTools_ArmaturePanel)

@@ -2,17 +2,7 @@ import bpy
 
 
 class CameraPreferences(bpy.types.PropertyGroup):
-    """
-    Represents camera preferences shared across tools in Blender.
-
-    This class manages properties related to camera tools, such as the
-    overall enable/disable state and visual preferences like the color
-    used for wireframe visualizers. It is designed to be used as a
-    property group in Blender, allowing for easy integration into user
-    interface panels and other features.
-    """
-
-    enabled: bpy.props.BoolProperty(name="Armature Tools enabled", default=True)
+    enabled: bpy.props.BoolProperty(name="Camera Tools enabled", default=True)
 
     ifo_visualizer_wire_color: bpy.props.FloatVectorProperty(
         name="Visualizer Wire Color",

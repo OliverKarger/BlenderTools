@@ -22,14 +22,29 @@ bundle_addon:
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_BRANCH == "main"'
-  script:
+  before_script:
     - apt-get update && apt-get install -y jq zip
+  script:
     - python3 .gitlab/ci/extract_bl_info.py "$ADDON_INIT" > bl_info.json
     - VERSION=$(jq -r .version bl_info.json)
     - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" >> release.env; fi
     - PRERELEASE=$(jq -r .prerelease bl_info.json)
     - if [ -n "$PRERELEASE" ]; then echo "PRERELEASE=$PRERELEASE" >> release.env; fi
-    - zip -r "$ZIP_NAME" . -x "*.git*" "*.venv*" "__pycache__/*" "*.mypy_cache*" "*.vscode*" ".mypy_cache/*"
+    - zip -r "$ZIP_NAME" . \
+        -x "*.git*" \
+          "*.idea*" \
+          "*.venv*" \
+          "*.mypy_cache*" \
+          "*.vscode*" \
+          "*.pyc" \
+          "__pycache__/*" \
+          "*.DS_Store" \
+          ".gitlab/*" \
+          ".flake8" \
+          ".gitattributes" \
+          ".gitignore" \
+          ".gitlab-ci.yml" \
+          "release.env"
   artifacts:
     paths:
       - $ZIP_NAME 
@@ -43,8 +58,13 @@ release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+      allow_failure: false
   variables:
     GIT_SSL_NO_VERIFY: "1"
+  needs:
+    - job: bundle_addon
+      artifacts: true
   before_script:
     - apk --no-cache add openssl ca-certificates
     - mkdir -p /usr/local/share/ca-certificates/extra
@@ -67,7 +87,6 @@ release:
 
   release:
     tag_name: "v$VERSION"
-    name: "$RELEASE_TITLE"
     description: "$RELEASE_DESC"
     ref: $CI_COMMIT_SHA
     assets:
