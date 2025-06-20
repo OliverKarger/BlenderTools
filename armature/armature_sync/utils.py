@@ -1,3 +1,9 @@
+import bpy
+from ... import bt_logger
+
+logger = bt_logger.get_logger(__name__)
+
+
 def has_significant_scale_difference(obj_a, obj_b, threshold=0.01):
     """
     Determines whether two objects have a significant difference in their
@@ -38,8 +44,15 @@ def has_significant_scale_difference(obj_a, obj_b, threshold=0.01):
     result = abs(avg_a - avg_b) > threshold
 
     if result:
-        print("Armatures differ significantly in Scale!")
+        logger.warning("Armatures differ significantly in Scale!")
     else:
-        print("Armature Scale is withing expected Parameters")
+        logger.info("Armature Scale is withing expected Parameters")
 
     return result
+
+
+def get_bone_groups(armature: bpy.types.Object) -> bpy.types.ArmatureBones | None:
+    if armature.type == "ARMATURE":
+        return armature.data.collections
+    else:
+        return None

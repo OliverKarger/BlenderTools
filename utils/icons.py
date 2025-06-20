@@ -2,6 +2,21 @@ import os
 
 from bpy.utils import previews
 
+ICON_MAP = {
+    "MESH": "MESH_DATA",
+    "LIGHT": "LIGHT_DATA",
+    "LIGHT_PROBE": "LIGHT_DATA",
+    "CAMERA": "CAMERA_DATA",
+    "CURVE": "CURVE_DATA",
+    "EMPTY": "EMPTY_DATA",
+    "ARMATURE": "ARMATURE_DATA",
+    "LATTICE": "LATTICE_DATA",
+    "META": "META_DATA",
+    "FONT": "FONT_DATA",
+    "SPEAKER": "SPEAKER",
+    "VOLUME": "VOLUME_DATA",
+}
+
 
 class IconManager:
     """

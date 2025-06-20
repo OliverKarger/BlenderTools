@@ -3,17 +3,8 @@ import bpy
 from . import utils
 
 
-class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
-    """
-    Operator to check compatibility between two armatures in Blender.
-
-    This class checks the compatibility of two armatures in a Blender scene by verifying
-    their scales and comparing their bone structures. It ensures that both armatures are
-    of type 'ARMATURE', checks for uniform scaling, calculates relative scale differences,
-    and compares bone lists to identify any discrepancies.
-    """
-
-    bl_idname = "blendertools.armature_sync_check"
+class BlenderTools_ArmatureSync_Check(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_check"
     bl_label = "Check Compatibility"
 
     def execute(self, context):
@@ -79,18 +70,8 @@ class BlenderTools_ArmatureSyncCheck(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
-    """
-    Operator class to enumerate matching bones between source and target armatures.
-
-    This operator is used to identify and enumerate bones that are common between a
-    source armature and a target armature in a Blender scene. It ensures that both
-    source and target objects are of type 'ARMATURE', and it requires valid armature
-    objects to function. The matching bones are processed and added to a custom property
-    list belonging to the current scene.
-    """
-
-    bl_idname = "blendertools.armature_sync_enum"
+class BlenderTools_ArmatureSync_Enum(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_enum"
     bl_label = "Enumerate Bones"
 
     def execute(self, context):
@@ -108,41 +89,36 @@ class BlenderTools_ArmatureSyncEnum(bpy.types.Operator):
 
         props.bones.clear()
 
-        source_bones = {bone.name for bone in source.data.bones}
-        target_bones = {bone.name for bone in target.data.bones}
+        source_bones = {bone for bone in source.data.bones}
+        target_names = {bone.name for bone in target.data.bones}
 
-        matching_bones = source_bones & target_bones
+        matching_bones: list[bpy.types.Bone] = [bone for bone in source_bones if bone.name in target_names]
 
         if not matching_bones:
             self.report({"WARNING"}, "No matching bones found between armatures.")
             return {"CANCELLED"}
 
-        for bone_name in sorted(matching_bones):
+        for bone in matching_bones:
             item = props.bones.add()
-            item.name = bone_name
-            item.linked_name = bone_name
+            item.name = bone.name
+            item.linked_name = bone.name
             item.source_armature = source
             item.target_armature = target
             item.should_be_synced = True
             item.sync_enabled = False
 
+            # Check which bone collection(s) this bone belongs to
+            for collection in utils.get_bone_groups(source):
+                if bone.name in collection.bones:
+                    item.bone_group = collection.name
+                    break
+
         self.report({"INFO"}, f"Found {len(matching_bones)} matching bones.")
         return {"FINISHED"}
 
 
-class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
-    """
-    Operator to enable synchronization between armatures in Blender.
-
-    This class defines an operator to apply synchronization constraints between
-    a source armature and a target armature in Blender. It ensures that bone
-    movements in the source armature are mirrored in the target armature by
-    creating appropriate constraints. The operator also offers functionality to
-    detect and handle potential scale mismatches and allows for user interactions
-    to adjust syncing behavior as needed.
-    """
-
-    bl_idname = "blendertools.armature_sync_enable"
+class BlenderTools_ArmatureSync_Enable(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_enable"
     bl_label = "Enable Armature Sync"
 
     def invoke(self, context, event):
@@ -170,6 +146,8 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
+        bones = props.bones
+        collection_filter = props.bone_collections
 
         if not props.bones:
             self.report({"ERROR"}, "No bones to sync. Please enumerate bones first.")
@@ -177,8 +155,17 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
         applied_count = 0
 
-        for bone_data in props.bones:
+        filtered_bones = []
+        if collection_filter == "ALL":
+            filtered_bones += bones
+        else:
+            for bone in bones:
+                if bone.bone_group == collection_filter:
+                    filtered_bones.append(bone)
+
+        for bone_data in filtered_bones:
             if not bone_data.should_be_synced:
+                self.report({"DEBUG"}, f"Bone {bone_data.name} should not be synced. Skipping...")
                 continue
 
             source = bone_data.source_armature
@@ -187,8 +174,13 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
             target_bone = bone_data.linked_name
 
             if not source or not target or source.type != "ARMATURE" or target.type != "ARMATURE":
+                self.report({"DEBUG"}, "Source or Target Armatures are not of Type Armature")
                 continue
             if source_bone not in source.pose.bones or target_bone not in target.pose.bones:
+                self.report(
+                    {"DEBUG"},
+                    f"Source Bone {source_bone.name} is not in Source Armature or Target Bone {target_bone.name} is not in Target Armature",  # noqa: E501
+                )
                 continue
 
             bpy.ops.object.mode_set(mode="OBJECT")
@@ -209,28 +201,22 @@ class BlenderTools_ArmatureSyncEnable(bpy.types.Operator):
 
             bone_data.sync_enabled = True
             applied_count += 1
+            self.report({"DEBUG"}, f"Added Sync Constraint to Bone {bone_data.name}")
 
         self.report({"INFO"}, f"ync constraints applied to {applied_count} bones (target follows source).")
         return {"FINISHED"}
 
 
-class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
-    """
-    Disable Armature Sync.
-
-    This operator disables armature synchronization by removing specific constraints
-    named "ArmatureSync" from the targeted armature's pose bones. It is designed to
-    operate within Blender's context, and it requires properly set source and target
-    armatures to function correctly.
-    """
-
-    bl_idname = "blendertools.armature_sync_disable"
+class BlenderTools_ArmatureSync_Disable(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_disable"
     bl_label = "Disable Armature Sync"
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
         source = props.source_armature
         target = props.target_armature
+        bones = props.bones
+        collection_filter = props.bone_collections
 
         if not source or not target:
             self.report({"ERROR"}, "Please set Source and Target Armature!")
@@ -246,7 +232,15 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
 
         removed_count = 0
 
-        for bone_data in props.bones:
+        filtered_bones = []
+        if collection_filter == "ALL":
+            filtered_bones += bones
+        else:
+            for bone in bones:
+                if bone.bone_group == collection_filter:
+                    filtered_bones.append(bone)
+
+        for bone_data in filtered_bones:
             target_bone_name = bone_data.linked_name
 
             if not target_bone_name or target_bone_name not in target.pose.bones:
@@ -261,92 +255,47 @@ class BlenderTools_ArmatureSyncDisable(bpy.types.Operator):
                 removed_count += 1
 
             bone_data.sync_enabled = False
+            self.report({"DEBUG"}, f"Sync Constraint removed from Bone {bone_data.name}")
 
         self.report({"INFO"}, f"Removed {removed_count} sync constraints from target rig.")
         return {"FINISHED"}
 
 
-class BlenderTools_OT_set_armature_source(bpy.types.Operator):
-    """
-    Operator to set the active object as the source armature.
-
-    This operator is used to assign the currently active object as the source
-    armature within the Blender Tools add-on context. It modifies the
-    blendertools_armaturesync property in the current scene with the active
-    object. This operator assumes the context has a valid active object and
-    the required property structure.
-
-    Attributes
-    ----------
-    bl_idname : str
-        The unique identifier of this operator, used to invoke it in scripts and UI.
-    bl_label : str
-        The display name of the operator, shown in Blender's UI.
-
-    Methods
-    -------
-    execute(context: bpy.types.Context) -> Set[str]
-        Sets the currently selected active object as the source armature in the
-        blendertools_armaturesync scene property. It returns an indication of
-        successful operation.
-    """
-
-    bl_idname = "blendertools.set_armature_source"
+class BlenderTools_ArmatureSync_SetSource(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_setsource"
     bl_label = "Set as Source Armature"
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
         props.source_armature = context.active_object
+        self.report({"DEBUG"}, f"Object {context.active_object.name} set as Source Armature")
         return {"FINISHED"}
 
 
-class BlenderTools_OT_set_armature_target(bpy.types.Operator):
-    """
-    Defines an operator to set the active object as the target armature.
-
-    This operator allows the user to designate the currently active object
-    as the target armature in the BlenderTools Armature Sync properties.
-    It is designed to work within the Blender scripting environment and
-    manages the synchronization of armatures for the related tools in
-    the workflow.
-
-    Attributes
-    ----------
-    bl_idname : str
-        Identifier string for the operator, used by Blender to register
-        and refer to the operator in scripts and UI.
-    bl_label : str
-        Display name of the operator that appears in the Blender UI.
-
-    Methods
-    -------
-    execute(context: bpy.types.Context) -> dict
-        Executes the operator logic that sets the active object as the
-        target armature in the BlenderTools Armature Sync properties.
-    """
-
-    bl_idname = "blendertools.set_armature_target"
+class BlenderTools_ArmatureSync_SetTarget(bpy.types.Operator):
+    bl_idname = "blendertools.armaturesync_settarget"
     bl_label = "Set as Target Armature"
 
     def execute(self, context):
         props = context.scene.blendertools_armaturesync
         props.target_armature = context.active_object
+        self.report({"DEBUG"}, f"Object {context.active_object.name} set as Target Armature")
         return {"FINISHED"}
 
 
 def register():
-    bpy.utils.register_class(BlenderTools_ArmatureSyncEnum)
-    bpy.utils.register_class(BlenderTools_ArmatureSyncEnable)
-    bpy.utils.register_class(BlenderTools_ArmatureSyncDisable)
-    bpy.utils.register_class(BlenderTools_ArmatureSyncCheck)
-    bpy.utils.register_class(BlenderTools_OT_set_armature_source)
-    bpy.utils.register_class(BlenderTools_OT_set_armature_target)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_Enum)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_Enable)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_Disable)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_Check)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_SetSource)
+    bpy.utils.register_class(BlenderTools_ArmatureSync_SetTarget)
 
 
 def unregister():
-    bpy.utils.unregister_class(BlenderTools_ArmatureSyncEnum)
-    bpy.utils.unregister_class(BlenderTools_ArmatureSyncEnable)
-    bpy.utils.unregister_class(BlenderTools_ArmatureSyncDisable)
-    bpy.utils.unregister_class(BlenderTools_ArmatureSyncCheck)
-    bpy.utils.unregister_class(BlenderTools_OT_set_armature_source)
-    bpy.utils.unregister_class(BlenderTools_OT_set_armature_target)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_Enum)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_Enable)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_Disable)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_Check)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_SetSource)
+    bpy.utils.unregister_class(BlenderTools_ArmatureSync_SetTarget)

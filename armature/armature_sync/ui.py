@@ -1,21 +1,9 @@
 import bpy
 
+from . import operators
+
 
 def view3d_context_menu(self, context):
-    """
-    Invoke the 3D Viewport context menu for armature-related operations within the Blender environment.
-    Provides operators for setting the source and target armatures when the active object is of type
-    ARMATURE and the relevant add-on is enabled.
-
-    Parameters:
-        self: This instance of the panel invokes the method.
-        context: Provides access to Blender's RNA contexts, including required add-on and
-            active object information.
-
-    Returns:
-        bool: False if the required add-on ("blendertools") is not active. Otherwise, does not
-        explicitly return a value.
-    """
     addon = context.preferences.addons.get("blendertools")
     if not addon:
         return False
@@ -25,20 +13,26 @@ def view3d_context_menu(self, context):
 
     layout = self.layout
 
-    layout.operator("blendertools.set_armature_source")
-    layout.operator("blendertools.set_armature_target")
+    layout.operator(operators.BlenderTools_ArmatureSync_SetSource.bl_idname, icon="ARMATURE_DATA")
+    layout.operator(operators.BlenderTools_ArmatureSync_SetTarget.bl_idname, icon="ARMATURE_DATA")
 
 
 class BONE_UL_bone_list(bpy.types.UIList):
-    """
-    Defines a custom UI list class to display and interact with a list of bones.
-    This class inherits from `bpy.types.UIList` and provides custom drawing
-    behaviors for bone items in the UI.
+    def filter_items(self, context, data, propname):
+        props = context.scene.blendertools_armaturesync
+        collection_filter = props.bone_collections
 
-    The class is designed to handle the display of bones in two layouts:
-    'DEFAULT'/'COMPACT' and 'GRID'. It customizes how each bone item appears,
-    including properties like synchronization and name display with icons.
-    """
+        items = getattr(data, propname)
+        flt_flags = []
+        flt_neworder = []
+
+        for item in items:
+            if collection_filter == "ALL" or item.bone_group == collection_filter:
+                flt_flags.append(self.bitflag_filter_item)
+            else:
+                flt_flags.append(0)  # filtered out
+
+        return flt_flags, flt_neworder
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
@@ -50,6 +44,8 @@ class BONE_UL_bone_list(bpy.types.UIList):
             row.prop(item, "should_be_synced", text="")
 
             row.label(text=item.name, icon="BONE_DATA")
+            if item.bone_group:
+                row.label(text=item.bone_group, icon="OUTLINER_COLLECTION")
 
         elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
@@ -58,11 +54,9 @@ class BONE_UL_bone_list(bpy.types.UIList):
 
 def register():
     bpy.utils.register_class(BONE_UL_bone_list)
-
     bpy.types.VIEW3D_MT_object_context_menu.append(view3d_context_menu)
 
 
 def unregister():
     bpy.utils.unregister_class(BONE_UL_bone_list)
-
     bpy.types.VIEW3D_MT_object_context_menu.remove(view3d_context_menu)

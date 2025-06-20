@@ -1,18 +1,9 @@
 import bpy
 
 
-class BlenderTools_SBRebindRecursive(bpy.types.Operator):
-    """
-    Operator to recursively rebind specified Soft Body modifiers on an object and its hierarchy.
+class BlenderTools_SoftbodyRebind_Rebind(bpy.types.Operator):
 
-    This operator iterates through active object's children to locate and rebind soft body-related
-    modifiers such as `Mesh Deform` and `Surface Deform`. It ensures modifiers are correctly rebound
-    to their underlying structure by temporarily switching the object mode and properly reselecting
-    objects during the process. The depth of recursion is limited by the maximum value defined in the
-    add-on preferences.
-    """
-
-    bl_idname = "blendertools.sbrebindrecursive"
+    bl_idname = "blendertools.softbodyrebind_rebind"
     bl_label = "Rebind Softbody"
 
     def execute(self, context):
@@ -75,8 +66,8 @@ class BlenderTools_SBRebindRecursive(bpy.types.Operator):
 
 
 def register():
-    bpy.utils.register_class(BlenderTools_SBRebindRecursive)
+    bpy.utils.register_class(BlenderTools_SoftbodyRebind_Rebind)
 
 
 def unregister():
-    bpy.utils.unregister_class(BlenderTools_SBRebindRecursive)
+    bpy.utils.unregister_class(BlenderTools_SoftbodyRebind_Rebind)
